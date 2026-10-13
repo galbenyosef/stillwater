@@ -1,0 +1,68 @@
+{
+  "note": "Content blocks of every inline <script>/<style> in the captured HTML documents. byteStart/byteEnd are content offsets (tags excluded, end exclusive) into the source document; sha256 is over those exact bytes. Real JS/CSS blocks are rendered to a readable twin with pinned prettier 3.9.6 (module API, single pass verified idempotent); the Cloudflare bot-challenge block is third-party machinery and is indexed wholeFile, never sliced. External references (script src=, link rel=stylesheet) are not blocks.",
+  "blocks": [
+    {
+      "file": "readable/index-inline-1.pretty.js",
+      "source": "index.html",
+      "kind": "script",
+      "block": 1,
+      "byteStart": 23376,
+      "byteEnd": 23748,
+      "bytes": 372,
+      "sha256": "344a276efeaa37850c6fa95778d4688bf3b140611e662a5e55f41c06ccaf16b7"
+    },
+    {
+      "file": "readable/index-inline-2.pretty.js",
+      "source": "index.html",
+      "kind": "script",
+      "block": 2,
+      "byteStart": 23766,
+      "byteEnd": 24687,
+      "bytes": 921,
+      "sha256": "d439928fed9aa18484954be5f3fcca56dc297c77d88741b3e54cc4f67ebba225"
+    }
+  ],
+  "sources": [
+    {
+      "source": "index.html",
+      "sourceBytes": 24712,
+      "sourceSha256": "765282815d4828cf672dccd4789992c6d3600e0df1ae4a491daca1ad09d346fd",
+      "scripts": 2,
+      "styles": 0,
+      "dataBlocks": 0,
+      "externalScripts": [
+        "<script type=\"module\" crossorigin src=\"/assets/index-BogB70q-.js\">"
+      ],
+      "blocks": [
+        {
+          "kind": "code",
+          "tagOpen": "<script>",
+          "byteStart": 23376,
+          "byteEnd": 23748,
+          "bytes": 372,
+          "sha256": "344a276efeaa37850c6fa95778d4688bf3b140611e662a5e55f41c06ccaf16b7",
+          "file": "readable/index-inline-1.pretty.js",
+          "parsedAs": "babel",
+          "prettyPasses": 1,
+          "prettyLines": 11,
+          "prettyBytes": 382,
+          "prettySha256": "dd8bb6ddf37a6df285747efc02422a68460417b42a28d75d915d23059166fac1"
+        },
+        {
+          "kind": "code",
+          "tagOpen": "<script>",
+          "byteStart": 23766,
+          "byteEnd": 24687,
+          "bytes": 921,
+          "sha256": "d439928fed9aa18484954be5f3fcca56dc297c77d88741b3e54cc4f67ebba225",
+          "file": "readable/index-inline-2.pretty.js",
+          "parsedAs": "babel",
+          "prettyPasses": 1,
+          "prettyLines": 33,
+          "prettyBytes": 1162,
+          "prettySha256": "89e9b3ab2aafa373f7c10c90bda46f00bee5405d7fbf78b8e041b1ae0941707a"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+Stillwater keeper
+
+Current browser keeper: the project-supplied Tripo character, refined and
+rigged in the local authoring checkpoint
+work/assets/keeper/keeper-tripo-walk-edit.blend. Stillwater optimizes
+the mesh, bakes its approved appearance and adapts the game interactions.
+The eye refinement uses the CC0 Vitruvian eye texture credited below.
+Runtime source and checksums: assets/keeper/runtime.json.
+
+Archived hoodie keeper (local work/assets/keeper/archive/keeper.blend):
+
+Hoodie, jeans and shoes: "Hoodie and Jeans" by lizhiqiang (@lizhiqiang89).
+Source: https://sketchfab.com/3d-models/hoodie-and-jeans-4fc7bc06a5b94568b1923268f4a6e825
+License: Creative Commons Attribution 4.0 International (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+
+Changes: fitted the outfit to the keeper; adjusted sleeve pose and folds;
+refined materials and knit detail; separated and smoothed the original hood;
+added a folded neckline edge; baked browser textures and bound the character
+to Stillwater's existing animation rig.
+
+Anatomy, skin materials, rig data and groom guides derive from CC0 Vitruvian
+by Sean Buckley, Olaf Delgado-Friedrichs and the Vitruvian contributors.
+Source: https://github.com/Upliner/CharMorph-Vitruvian/tree/c252d1fc7f00ba59d87b66b3d32fa3471fc6ee44
+
+Original Stillwater additions remain MIT-licensed. Preserve this attribution
+when redistributing that archived character or its textures.
