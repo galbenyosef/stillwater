@@ -1,0 +1,537 @@
+{
+  "_note": "Reviewed semantic-rename rules for stillwater's src/ slices (PLAN §5, campaign run 2026-10-14). Two kinds: `global` maps a program-scope name (declared by one slice, referenced by others) to a semantic name and is applied in EVERY slice by tools/apply-names.mjs — the tool refuses a partial application, refuses a name that appears as an eligible identifier inside a wholeFile vendor/machinery region (vendors are never renamed), and refuses a target that already exists as a spelling in the readable. `files` maps per-slice scoped rules (a function's own scope; `name:*` widens to everything nested). Vendor identifiers stay minified by construction (vendor regions are index-only). The achieved per-file maps are recovered into rename-map.json by tools/recover-scoped-map.mjs and re-checked by tools/verify-rename.mjs, tools/check-chunk.mjs and tools/audit.js.",
+  "global": {
+    "lf": "resolveAssetUrl",
+    "uf": "revisionUrlModifier",
+    "df": "preferencesKey",
+    "ff": "normalizePreferences",
+    "pf": "loadPreferences",
+    "mf": "savePreferences",
+    "hf": "createLoadingScreen",
+    "J": "clampValue",
+    "Zf": "smoothStep",
+    "qf": "sluiceSpec",
+    "Y": "islandHeight",
+    "Qf": "shoreOutline",
+    "np": "shoreDistance",
+    "rp": "insideIsland",
+    "op": "landmarks",
+    "cp": "createRandom",
+    "xh": "worldData",
+    "Sh": "pathPlan",
+    "Eh": "shorePath",
+    "Dh": "benchArea",
+    "Oh": "benchTop",
+    "kh": "benchApproach",
+    "Ch": "bridgePlacement",
+    "Jf": "millMachineryOrigins",
+    "th": "tuneMaterial",
+    "vh": "placeInstance",
+    "yh": "populateWorld",
+    "Ah": "distanceToPath",
+    "jh": "onPath",
+    "Mh": "insideBenchArea",
+    "Nh": "interiorFloorHeight",
+    "Ph": "scatterRocks",
+    "Fh": "scatterPebbles",
+    "Ih": "scatterTrees",
+    "Lh": "scatterUndergrowth",
+    "Rh": "hash2",
+    "zh": "valueNoise",
+    "Bh": "hillNoise",
+    "Vh": "buildTerrainMask",
+    "Hh": "findMillAnchors",
+    "Uh": "boxDistance",
+    "Wh": "buildMillMask",
+    "Gh": "scatterMillRocks",
+    "Kh": "pathVec2Table",
+    "Jh": "flattenTerrain",
+    "Yh": "waterwheelSpec",
+    "Og": "buildSluiceGate",
+    "kg": "buildSluiceWinch",
+    "X": "millLayout",
+    "Mg": "buildMillInterior",
+    "Ng": "millPalette",
+    "Lg": "millMaterialFor",
+    "zg": "buildMillRug",
+    "Yg": "buildWheelRim",
+    "Qg": "buildMillMachinery",
+    "$g": "buildGroundCover",
+    "f_": "buildDistantHills",
+    "m_": "buildCanopyInstance",
+    "h_": "buildMeadowTuft",
+    "v_": "scatterShrubs",
+    "y_": "scatterFlowers",
+    "W_": "buildCollisionBoxes",
+    "rv": "assembleWorld",
+    "av": "hullProfile",
+    "Sv": "createWaveUniforms",
+    "Cv": "updateWaveUniforms",
+    "kv": "buildWaterGeometry",
+    "Av": "buildPondWater",
+    "Jv": "createSpringState",
+    "oy": "buildSplashSystem",
+    "sy": "buildWakeField",
+    "ly": "buildPondSurface",
+    "uy": "buildMillSpill",
+    "Ty": "fishKinematics",
+    "Dy": "buildFishAnimation",
+    "Ay": "buildFishSchool",
+    "Iy": "buildReeds",
+    "Hy": "buildFallingLeaves",
+    "Uy": "buildPondLife",
+    "eb": "createMillState",
+    "mb": "AudioEngine",
+    "_b": "buildBoatRoute",
+    "vb": "attachHullWaves",
+    "Ob": "createBoatState",
+    "ux": "mapSkeleton",
+    "kx": "cloneSkinnedGeometry",
+    "Fx": "fisherClimbSpec",
+    "Vx": "keeperMotionSpec",
+    "zx": "fisherClimbAt",
+    "Kx": "createFishingState",
+    "rS": "buildKeeperRig",
+    "aS": "buildMillKeeper",
+    "oS": "chairSpec",
+    "dS": "createChairPath",
+    "wS": "createPlayerState",
+    "PS": "buildFishingLine",
+    "XS": "buildStoveFire",
+    "ZS": "buildStove",
+    "QS": "buildKeeperRoom",
+    "nC": "buildClothingDrips",
+    "rC": "buildSwimLadder",
+    "Z": "byId",
+    "Q": "playerState",
+    "gC": "fishingState",
+    "CC": "boatState",
+    "mS": "dockSpec",
+    "mE": "bootGame",
+    "gE": "frameLoop",
+    "hE": "warmup",
+    "ip": "walkableFacing",
+    "ap": "slideToWalkable",
+    "Xm": "sampleTerrain",
+    "Zm": "buildTerrainSamples",
+    "Qm": "waterlineEllipse",
+    "$f": "staticObstacles",
+    "ep": "dynamicObstacles",
+    "tp": "setDynamicObstacles",
+    "Xh": "wheelAngleAt",
+    "Zh": "TAU",
+    "Qh": "paddlePhaseAt",
+    "$h": "wheelRimClearance",
+    "eg": "wheelRimSpeed",
+    "tg": "wheelFallTime",
+    "ng": "paddleInWater",
+    "rg": "wheelSpillElement",
+    "ig": "ballisticPointAt",
+    "ag": "spillElementAt",
+    "ov": "hullSegmentAt",
+    "sv": "hullWaterlineWidth",
+    "cv": "hullSectionBase",
+    "lv": "hullSectionSheer",
+    "uv": "hullSectionWidth",
+    "dv": "hullSectionWidthDry",
+    "fv": "fixed8",
+    "pv": "hullWidthGlsl",
+    "mv": "hullContactDistance",
+    "kf": "smoothRange",
+    "Rf": "breezeUniform",
+    "Mf": "createCloudShadows",
+    "Bf": "createBreezeState",
+    "Wf": "createWeather",
+    "xf": "shaftLightField",
+    "Af": "cloudSunlightGlsl",
+    "Uf": "weatherCycleAt",
+    "Vf": "breezeShaderChunk",
+    "Gf": "rainShaderChunk",
+    "up": "applyWeatherMaterials",
+    "dp": "scatterGrassPoints",
+    "fp": "setupLighting",
+    "Bp": "createWoodlandLightField",
+    "Vp": "createRenderPipeline",
+    "iC": "loadingScreen",
+    "aC": "preferences",
+    "oC": "panelIds",
+    "sC": "anyPanelOpen",
+    "cC": "canvasEl",
+    "lC": "reducedMotion",
+    "uC": "coarsePointer",
+    "dC": "syncKeyboardHelp",
+    "fC": "cloudShadows",
+    "pC": "breezeState",
+    "mC": "queryParams",
+    "jC": "balancedQuality",
+    "OC": "experienceStarted",
+    "AC": "loading",
+    "MC": "worldReady"
+  },
+  "files": {
+    "island-01.js": [
+      {
+        "scope": "islandHeight",
+        "renames": {
+          "e": "x",
+          "t": "z",
+          "n": "bearing",
+          "r": "radius",
+          "i": "plateau",
+          "a": "millPad",
+          "o": "hollow",
+          "s": "mound",
+          "c": "height",
+          "l": "chute"
+        }
+      },
+      {
+        "scope": "shoreDistance",
+        "renames": {
+          "e": "x",
+          "t": "z",
+          "n": "best",
+          "r": "edge",
+          "i": "ax",
+          "a": "az",
+          "o": "bx",
+          "s": "bz",
+          "c": "dx",
+          "l": "dz",
+          "u": "along"
+        }
+      },
+      {
+        "scope": "insideIsland",
+        "renames": {
+          "e": "x",
+          "t": "z",
+          "n": "margin",
+          "r": "bodyMargin",
+          "i": "ox",
+          "a": "oz"
+        }
+      },
+      {
+        "scope": "walkableFacing",
+        "renames": {
+          "e": "x",
+          "t": "z",
+          "n": "facing",
+          "r": "sinFacing",
+          "i": "cosFacing"
+        }
+      },
+      {
+        "scope": "slideToWalkable",
+        "renames": {
+          "e": "x",
+          "t": "z",
+          "n": "dx",
+          "r": "dz",
+          "i": "facing",
+          "a": "walkableAt",
+          "o": "steps",
+          "s": "bumped"
+        }
+      }
+    ],
+    "boat-hull-01.js": [
+      {
+        "scope": "hullSegmentAt",
+        "renames": {
+          "e": "segment",
+          "t": "profile",
+          "n": "last",
+          "r": "x0",
+          "i": "y0",
+          "a": "x1",
+          "o": "y1",
+          "s": "slopeIn",
+          "c": "slopeOut"
+        }
+      },
+      {
+        "scope": "hullWaterlineWidth",
+        "renames": {
+          "e": "along",
+          "t": "segIndex",
+          "n": "segment",
+          "r": "u01"
+        }
+      },
+      {
+        "scope": "hullSectionWidth",
+        "renames": {
+          "e": "along",
+          "t": "height"
+        }
+      },
+      {
+        "scope": "hullSectionWidthDry",
+        "renames": {
+          "e": "along",
+          "t": "height"
+        }
+      },
+      {
+        "scope": "hullContactDistance",
+        "renames": {
+          "e": "x",
+          "t": "height",
+          "n": "along",
+          "r": "alongNeg",
+          "i": "clamped",
+          "a": "lo",
+          "o": "hi",
+          "s": "halfWidth",
+          "c": "slope",
+          "l": "norm",
+          "u": "across",
+          "d": "beyond"
+        }
+      },
+      {
+        "scope": "hullSectionBase",
+        "renames": {
+          "e": "along"
+        }
+      },
+      {
+        "scope": "hullSectionSheer",
+        "renames": {
+          "e": "along"
+        }
+      },
+      {
+        "scope": "fixed8",
+        "renames": {
+          "e": "value"
+        }
+      }
+    ],
+    "waterwheel-kinematics-01.js": [
+      {
+        "scope": "wheelAngleAt",
+        "renames": {
+          "e": "time",
+          "t": "machine"
+        }
+      },
+      {
+        "scope": "paddlePhaseAt",
+        "renames": {
+          "e": "time",
+          "t": "paddle",
+          "n": "machine"
+        }
+      },
+      {
+        "scope": "paddleInWater",
+        "renames": {
+          "e": "time",
+          "t": "paddle",
+          "n": "machine",
+          "r": "phase"
+        }
+      },
+      {
+        "scope": "wheelSpillElement",
+        "renames": {
+          "e": "time",
+          "t": "paddle",
+          "n": "lateral",
+          "r": "machine",
+          "i": "phase",
+          "a": "speed",
+          "o": "sinPhase",
+          "s": "cosPhase",
+          "c": "rimRadius",
+          "l": "origin",
+          "u": "velocity"
+        }
+      },
+      {
+        "scope": "ballisticPointAt",
+        "renames": {
+          "e": "element",
+          "t": "age"
+        }
+      },
+      {
+        "scope": "spillElementAt",
+        "renames": {
+          "e": "time",
+          "t": "paddle",
+          "n": "lateral",
+          "r": "gateFlow",
+          "i": "machine",
+          "a": "flow",
+          "o": "element",
+          "s": "age"
+        }
+      }
+    ],
+    "terrain-01.js": [
+      {
+        "scope": "sampleTerrain",
+        "renames": {
+          "e": "x",
+          "t": "z",
+          "n": "flatteners",
+          "r": "heightAt",
+          "i": "height",
+          "a": "step",
+          "o": "slopeX",
+          "s": "slopeZ",
+          "c": "slope",
+          "l": "clearance",
+          "u": "nx",
+          "d": "nz"
+        }
+      },
+      {
+        "scope": "buildTerrainSamples",
+        "renames": {
+          "e": "flatteners",
+          "t": "size",
+          "n": "extent",
+          "r": "data",
+          "i": "row",
+          "a": "col",
+          "o": "x",
+          "s": "z"
+        }
+      },
+      {
+        "scope": "waterlineEllipse",
+        "renames": {
+          "e": "box",
+          "t": "midY",
+          "n": "halfY",
+          "r": "shrink",
+          "i": "rx",
+          "a": "rz"
+        }
+      }
+    ],
+    "lights-01.js": [
+      {
+        "scope": "setupLighting",
+        "renames": {
+          "e": "renderer",
+          "t": "scene",
+          "n": "sun",
+          "r": "hemisphere",
+          "i": "fill",
+          "a": "sky",
+          "o": "reducedMotion",
+          "s": "weather",
+          "c": "shadow",
+          "l": "uniforms",
+          "u": "grass",
+          "d": "baseline",
+          "f": "sunCool",
+          "p": "fogShade",
+          "m": "applyWeather"
+        }
+      }
+    ],
+    "light-shafts-01.js": [
+      {
+        "scope": "shaftLightField",
+        "renames": {
+          "e": "x",
+          "t": "z",
+          "n": "y",
+          "r": "total",
+          "i": "shaft",
+          "a": "dx",
+          "o": "dy",
+          "s": "dz",
+          "c": "alongBeam",
+          "l": "dist2"
+        }
+      },
+      {
+        "scope": "createCloudShadows",
+        "renames": {
+          "e": "reducedMotion",
+          "t": "uniforms",
+          "n": "patched",
+          "r": "clock",
+          "i": "mode",
+          "a": "applyState"
+        }
+      }
+    ],
+    "boot-utils-01.js": [
+      {
+        "scope": "resolveAssetUrl",
+        "renames": {
+          "e": "url",
+          "t": "assetRevisions",
+          "n": "base",
+          "r": "parsed",
+          "i": "origin",
+          "a": "revision"
+        }
+      },
+      {
+        "scope": "revisionUrlModifier",
+        "renames": {
+          "e": "url"
+        }
+      },
+      {
+        "scope": "normalizePreferences",
+        "renames": {
+          "e": "prefs"
+        }
+      },
+      {
+        "scope": "loadPreferences",
+        "renames": {
+          "e": "storage"
+        }
+      },
+      {
+        "scope": "savePreferences",
+        "renames": {
+          "e": "prefs",
+          "t": "storage"
+        }
+      },
+      {
+        "scope": "createLoadingScreen",
+        "renames": {
+          "e": "doc",
+          "t": "loader",
+          "n": "totalParts",
+          "r": "messageEl",
+          "i": "detailEl",
+          "a": "progressEl",
+          "o": "recoveryEl",
+          "s": "ready",
+          "c": "extra",
+          "l": "recoveryTimer",
+          "u": "done",
+          "d": "armRecovery",
+          "f": "paint"
+        }
+      }
+    ],
+    "material-tuning-01.js": [
+      {
+        "scope": "tuneMaterial",
+        "renames": {
+          "e": "material",
+          "t": "isTimber",
+          "n": "timberWet",
+          "r": "isFoliage",
+          "i": "isRock"
+        }
+      }
+    ]
+  }
+}

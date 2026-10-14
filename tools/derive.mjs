@@ -9,47 +9,69 @@
 // .upstream/manifest.json before it is rendered, so a drifted capture fails
 // loudly instead of being silently re-derived.
 //
-// Pipeline:
+// Pipeline (2026-10-14 structure pass):
 //   the app bundle       -> pinned prettier 3.9.6 (module API — the CLI
 //                           respects .gitignore and can silently echo its
 //                           input), single pass verified idempotent
-//                           -> readable/assets__index-*.pretty.js; the bundle
-//                           is one flat classic script whose modules the build
-//                           concatenated, so IDENTIFIABLE VENDOR REGIONS are
-//                           claimed as wholeFile sections and everything else
-//                           is sliced statement-aligned into src/<tag>-NN.js
-//                           at top-level declaration boundaries, ~250-350 line
-//                           windows (oversized single declarations stay
-//                           whole), exact 2-line provenance header; every
-//                           slice is parse-checked with
-//                           `node --input-type=module --check -` and
-//                           round-trips byte-exact to its readable line range.
-//   vendor regions       -> wholeFile sections (vendor rule), never sliced,
-//                           content-anchored and asserted against the bundle:
+//                           -> readable/assets__index-*.pretty.js. The bundle
+//                           is one flat classic script whose app modules the
+//                           build concatenated with NO boundary markers (no
+//                           module factory tables, no source-map comments —
+//                           verified) so app-module boundaries are not
+//                           recoverable; what IS recoverable are the VENDOR
+//                           MODULE REGIONS the bundler inlined whole:
 //                             · the Vite modulepreload polyfill (build machinery)
-//                             · three.js r186 core (constants .. WebGLRenderer;
-//                               statements 1..307 of the pretty — `window.__THREE__ = '186'`)
-//                             · the GLTFLoader addon with its KHR_* plugins
-//                               (DRACO/KTX2/meshopt hooks; `THREE.GLTFLoader:`)
-//                             · the MeshoptDecoder module (embedded wasm;
-//                               `var qm = (function () { … WebAssembly … meshopt … })`)
+//                             · three.js r186 core (constants .. WebGLRenderer)
+//                             · three.js examples/jsm loaders/HDRLoader
+//                             · three.js examples/jsm postprocessing (Pass,
+//                               FullScreenQuad, RenderPass, the GTAO shaders +
+//                               PoissonDenoiseShader + SimplexNoise + GTAOPass,
+//                               CopyShader, LuminosityHighPassShader,
+//                               UnrealBloomPass, OutputShader, OutputPass,
+//                               ShaderPass)
+//                             · three.js examples/jsm/utils/BufferGeometryUtils
+//                             · three.js examples/jsm/utils/SkeletonUtils
+//                             · three.js examples/jsm/loaders/GLTFLoader (+ its
+//                               KHR_* plugins and the GLTFParser)
+//                             · the MeshoptDecoder module with embedded wasm
+//                             · three.js examples/jsm/controls/OrbitControls
+//                               (handlers extracted to bound functions)
+//                             · three.js examples/jsm/objects/Reflector
+//                             · three.js examples/jsm/objects/Sky
+//                             · three.js examples/jsm/geometries/RoundedBoxGeometry
+//                           Every region is a run of consecutive top-level
+//                           statements, content-anchored (first/last + region
+//                           guard) and claimed as a wholeFile section: indexed
+//                           in readable/, never sliced, never renamed. A
+//                           changed bundle fails the anchors loudly.
+//   the app code         -> statement-aligned slices src/<cluster>-NN.js, cut
+//                           only at top-level declaration boundaries and only
+//                           WITHIN one semantic cluster (the hand-reviewed
+//                           cluster table below: world, water, mill, boat,
+//                           keeper, fishing, boot … — the reading recorded per
+//                           section in split-spec.json); ≤600-line windows,
+//                           an oversized single declaration stays whole.
+//                           Exact 2-line provenance header; every slice parses
+//                           standalone (`node --input-type=module --check -`)
+//                           and round-trips byte-exact to its readable range.
 //   the stylesheet       -> readable/assets__index-*.pretty.css, wholeFile
-//                           (stylesheet rule: stylesheets are never sliced)
-//   the Cloudflare       -> readable/cdn-cgi__challenge-platform__scripts__jsd__main.pretty.js,
-//   challenge script        wholeFile (third-party machinery; the file is
-//                           recorded `dynamic: true` — it rotates per response)
+//   the Cloudflare       -> readable/cdn-cgi__challenge-platform__…pretty.js,
+//   challenge script        wholeFile (third-party machinery, `dynamic: true`)
 //   entry document       -> inline <script>/<style> scan (byte ranges + sha256):
 //                           index.html carries TWO inline script blocks — the
 //                           app's recovery handler (real app code: head
-//                           wholeFile + statement-aligned slice) and the
+//                           wholeFile + one statement-aligned slice) and the
 //                           Cloudflare bot-challenge injection (machinery:
 //                           wholeFile, never sliced). Twins live in readable/
 //                           and the byte ranges are recorded in
 //                           readable/index-inline-map.json.
 //
-// Identifiers in src/ are the bundle's own minified names — the rename
-// campaign (PLAN §5) is recorded as an open task in README.md, not claimed
-// here. usage: node tools/derive.mjs
+// Identifiers in the pristine src/ layer are the bundle's own minified names.
+// The reviewed semantic rename layer (tools/names.json -> tools/apply-names.mjs,
+// recorded in rename-map.json) is applied ON TOP of this pristine layer; a
+// rebuild is `node tools/derive.mjs && node tools/apply-names.mjs --all &&
+// node tools/recover-scoped-map.mjs` and must be byte-identical to the
+// committed src/ layer. usage: node tools/derive.mjs
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -59,8 +81,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const proj = path.resolve(here, "..");
 const PINNED = "3.9.6";
-const MAX_WINDOW = 350;
-const TODAY = "2026-10-13";
+const MAX_WINDOW = 600;
+const TODAY = "2026-10-14";
 const ROOT = ""; // capture sits at the repo root (origin root)
 
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
@@ -121,7 +143,7 @@ function parses(text) {
   return { ok: r.status === 0, why: (r.stderr || "").trim().split("\n").slice(-3).join(" | ") };
 }
 
-// ── markers for titles (top tokens, lowercase; fleet convention) ────────
+// ── markers for section descriptions (top tokens, lowercase) ────────────
 const STOP = new Set(
   ("function return typeof undefined object string number boolean prototype length value default " +
     "exports import this that with from then else case break continue delete instanceof constructor " +
@@ -143,7 +165,7 @@ function markers(text, n = 2) {
 }
 const markerText = (ms) => ms.map(([w, c]) => `${w}(${c})`).join(", ");
 
-// ── windowize: cut only at statement starts; ≤350 lines, a single ───────
+// ── windowize: cut only at statement starts; ≤MAX_WINDOW lines, a single ─
 // ── oversized declaration is a window of its own ────────────────────────
 function windowize(stmts) {
   const out = [];
@@ -219,27 +241,573 @@ function scanBlocks(buf) {
 // ── Cloudflare injection detection (inline block / captured file) ───────
 const isCfMachinery = (t) => /challenge-platform/.test(t) || /__CF\$cv\$params/.test(t);
 
-// ── bundle vendor anchors (content-anchored; a missing anchor fails) ────
-const ANCHOR = {
-  polyfill: (t) => /modulepreload/.test(t) && /relList/.test(t),
-  threeFirst: (t) => /LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2/.test(t),
-  threeLast: (t) => /isWebGLRenderer/.test(t) && /WebGL 1 is not supported since r163/.test(t),
-  gltfFirst: (t) => /setDRACOLoader/.test(t) && /setKTX2Loader/.test(t) && /setMeshoptDecoder/.test(t),
-  gltfLast: (t) => /OPAQUE: `OPAQUE`, MASK: `MASK`, BLEND: `BLEND`/.test(t),
-  meshopt: (t) => /WebAssembly/.test(t) && /meshopt/i.test(t) && /\bvar \w+ = \(function \(\) \{/.test(t),
-};
-
-const WHOLE_FILE = {
-  // the Cloudflare challenge script: third-party machinery, whole-file
-  "cdn-cgi__challenge-platform__scripts__jsd__main": {
+// ── bundle vendor/machinery regions ─────────────────────────────────────
+// The module boundaries the bundle DOES expose: a vendor module the bundler
+// inlined whole (or several inlined back to back) is a run of consecutive
+// top-level statements whose content carries the library's own strings. Each
+// region is asserted three ways: the first statement must match `first`, the
+// region must span exactly `span` statements, the last statement must match
+// `last` (when recorded), and every `guard` regex must match the region text.
+// Any mismatch fails the derive — a re-shaped readable never slips through.
+const REGION_SPECS = [
+  {
+    id: "vite-modulepreload-polyfill",
+    file: "vite-modulepreload-polyfill.js",
+    span: 1,
+    first: (t) => /modulepreload/.test(t) && /relList/.test(t),
+    guard: [/modulepreload/, /relList/],
     title:
-      "cdn-cgi__challenge-platform__scripts__jsd__main — Cloudflare bot-challenge script (third-party machinery, whole-file, never sliced)",
-    desc:
-      "The Cloudflare bot-challenge script the entry document's injected inline block loads (`/cdn-cgi/challenge-platform/scripts/jsd/main.js`) — Cloudflare machinery, not app code; the deployment rotates it per response (recorded `dynamic: true`), so it is indexed whole-file in readable/ and never sliced or rewritten.",
-    guard: (t) => /_cf_chl_opt/.test(t),
-    what: "Cloudflare bot-challenge script",
+      "vite-modulepreload-polyfill.js — Vite modulepreload polyfill (build machinery, whole-file, never sliced)",
+    content:
+      "The Vite-generated modulepreload polyfill IIFE (`link[rel=modulepreload]` relList.supports check + fetch warm-up) — build machinery, not app code; indexed whole-file in readable/, never sliced.",
+    what: "Vite modulepreload polyfill",
   },
-};
+  {
+    id: "three-core",
+    file: "three-core.js",
+    span: 307,
+    first: (t) => /LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2/.test(t),
+    last: (t) => /isWebGLRenderer/.test(t) && /WebGL 1 is not supported since r163/.test(t),
+    guard: [
+      /window\.__THREE__ = `186`/,
+      /THREE\.WebGLRenderer:/,
+      /#include </,
+      /gl_FragColor/,
+      /WebGLProgram/,
+    ],
+    title: "three-core.js — bundled three.js r186 core (vendor region, whole-file, never sliced)",
+    content:
+      "The bundled three.js r186 engine core (constants, math, color management, textures, geometries, materials, " +
+      "shader chunk/lib tables, objects, the `window.__THREE__` revision-186 registration and the WebGLRenderer) — " +
+      "vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+    what: "three.js r186 core",
+  },
+  {
+    id: "three-examples-hdrloader",
+    file: "three-examples-hdrloader.js",
+    span: 1,
+    first: (t) => /THREE\.HDRLoader: Read Error/.test(t),
+    guard: [/THREE\.HDRLoader/, /Bad File Format/],
+    title:
+      "three-examples-hdrloader.js — three.js examples/jsm/loaders/HDRLoader (vendor, whole-file, never sliced)",
+    content:
+      "The three.js examples HDR/RGBE loader the build inlined (a DataTextureLoader subclass reading RADIANCE " +
+      "`.hdr` headers and converting RGBE pixels — `THREE.HDRLoader:` error strings) for the forest-light sky — " +
+      "vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+    what: "HDRLoader (three examples)",
+  },
+  {
+    id: "three-examples-postprocessing",
+    file: "three-examples-postprocessing.js",
+    span: 11,
+    first: (t) => /this\.isPass = !0/.test(t) && /this\.needsSwap = !0/.test(t),
+    last: (t) => /OutputShader/.test(t) && /shaft\(p,/.test(t),
+    guard: [
+      /THREE\.Pass: \.render\(\) must be implemented in derived pass\./,
+      /GTAOShader/,
+      /GTAODepthShader/,
+      /GTAOBlendShader/,
+      /PoissonDenoiseShader/,
+      /CopyShader/,
+      /LuminosityHighPassShader/,
+      /OutputShader/,
+      /this\._fsQuad\.material = this\.material/,
+    ],
+    title:
+      "three-examples-postprocessing.js — bundled three.js examples postprocessing stack (vendor region, whole-file, never sliced)",
+    content:
+      "The three.js examples/jsm postprocessing modules the build inlined back to back: the Pass base + full-screen " +
+      "quad, RenderPass, the GTAO shader objects (GTAOShader/GTAODepthShader/GTAOBlendShader), PoissonDenoiseShader " +
+      "and its sample-table helpers, SimplexNoise, GTAOPass, CopyShader, LuminosityHighPassShader, UnrealBloomPass, " +
+      "OutputShader, OutputPass and ShaderPass. The minifier's join_vars merged the app's light-field shader " +
+      "constants (the full-screen vertex shader, the shaft term table over `yf`, the light-field AABB) into the " +
+      "region's final declaration — they are indexed here with it, not sliced. Vendor rule — whole-file in " +
+      "readable/, never sliced or rewritten.",
+    what: "three.js examples postprocessing stack",
+  },
+  {
+    id: "three-examples-buffergeometryutils",
+    file: "three-examples-buffergeometryutils.js",
+    span: 3,
+    first: (t) => /Set\(Object\.keys\(e\[0\]\.morphAttributes\)\)/.test(t),
+    guard: [/THREE\.BufferGeometryUtils/, /toTrianglesDrawMode/],
+    title:
+      "three-examples-buffergeometryutils.js — three.js examples/jsm/utils/BufferGeometryUtils (vendor, whole-file, never sliced)",
+    content:
+      "The three.js examples BufferGeometryUtils functions the build retained (mergeGeometries, mergeAttributes and " +
+      "toTrianglesDrawMode — `THREE.BufferGeometryUtils.` warning strings) — vendor, not app code. Vendor rule — " +
+      "indexed whole-file in readable/, never sliced or rewritten.",
+    what: "BufferGeometryUtils (three examples)",
+  },
+  {
+    id: "three-examples-skeletonutils",
+    file: "three-examples-skeletonutils.js",
+    span: 2,
+    first: (t) => /isSkinnedMesh/.test(t) && /bindMatrix/.test(t),
+    last: (t) => /e\.children\.length/.test(t),
+    guard: [/isSkinnedMesh/, /bindMatrix/, /skeleton\.clone\(\)/],
+    title:
+      "three-examples-skeletonutils.js — three.js examples/jsm/utils/SkeletonUtils clone (vendor, whole-file, never sliced)",
+    content:
+      "The three.js examples SkeletonUtils functions the build retained: clone (source/clone lookups, skeleton " +
+      "rebinding via bindMatrix) and its parallelTraverse recursion — vendor, not app code. Vendor rule — indexed " +
+      "whole-file in readable/, never sliced or rewritten.",
+    what: "SkeletonUtils (three examples)",
+  },
+  {
+    id: "three-examples-gltfloader",
+    file: "three-examples-gltfloader.js",
+    span: 16,
+    first: (t) => /setDRACOLoader/.test(t) && /setKTX2Loader/.test(t) && /setMeshoptDecoder/.test(t),
+    guard: [
+      /THREE\.GLTFLoader:/,
+      /KHR_DRACO_MESH_COMPRESSION/,
+      /KHR_TEXTURE_TRANSFORM/,
+      /GLTFCubicSpline|isInterpolantFactoryMethodGLTFCubicSpline/,
+      /DefaultMaterial/,
+    ],
+    title:
+      "three-examples-gltfloader.js — bundled three.js examples GLTFLoader with KHR_* plugins and the GLTFParser (vendor region, whole-file, never sliced)",
+    content:
+      "The whole three.js examples/jsm GLTFLoader the build inlined: the Loader subclass with its " +
+      "DRACOLoader/KTX2Loader/meshopt hooks, the GLTFRegistry, the GLTFParser class, the parser helpers " +
+      "(createDefaultMaterial, addUnknownExtensionsToUserData, assignExtrasToUserData, addMorphTargets, " +
+      "computeBounds …), the KHR_* plugin classes (DRACO/texture-transform material extensions, the " +
+      "OPAQUE/MASK/BLEND material enum) and the WEBGL/ATTRIBUTES constants — vendor, not app code. Vendor rule — " +
+      "indexed whole-file in readable/, never sliced or rewritten.",
+    what: "GLTFLoader + GLTFParser (three examples)",
+  },
+  {
+    id: "three-examples-meshoptdecoder",
+    file: "three-examples-meshoptdecoder.js",
+    span: 1,
+    first: (t) => /WebAssembly/.test(t) && /meshopt/i.test(t) && /\bvar \w+ = \(function \(\) \{/.test(t),
+    guard: [/WebAssembly/, /meshopt/i],
+    title:
+      "three-examples-meshoptdecoder.js — MeshoptDecoder module with embedded wasm (vendor region, whole-file, never sliced)",
+    content:
+      "The meshoptimizer decoder module the build inlined (its own minified runtime plus the embedded wasm loaded " +
+      "through `WebAssembly.instantiate`) that the app hands to the GLTFLoader via `setMeshoptDecoder` — vendor, " +
+      "not app code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+    what: "MeshoptDecoder",
+  },
+  {
+    id: "three-examples-orbitcontrols",
+    file: "three-examples-orbitcontrols.js",
+    span: 13,
+    first: (t) => /WARNING: OrbitControls\.js encountered an unknown camera type/.test(t),
+    last: (t) => /_interceptControlUp/.test(t),
+    guard: [/OrbitControls\.js/, /NONE: -1/, /_onPointerDown/],
+    title:
+      "three-examples-orbitcontrols.js — bundled three.js examples OrbitControls (vendor region, whole-file, never sliced)",
+    content:
+      "The three.js examples OrbitControls the build inlined (Controls subclass, ROTATE/DOLLY/PAN state enum, " +
+      "damping, keys and pointer/touch/wheel handling; the pointer handlers were extracted to bound top-level " +
+      "functions — `this._onPointerMove = M_.bind(this)` — and stay with the region) — vendor, not app code. " +
+      "Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+    what: "OrbitControls (three examples)",
+  },
+  {
+    id: "three-examples-reflector",
+    file: "three-examples-reflector.js",
+    span: 2,
+    first: (t) => /isReflector/.test(t) && /_reflectionCameras/.test(t),
+    last: (t) => /ReflectorShader/.test(t),
+    guard: [/isReflector/, /ReflectorShader/, /blendOverlay/],
+    title:
+      "three-examples-reflector.js — bundled three.js examples Reflector with its shader (vendor region, whole-file, never sliced)",
+    content:
+      "The three.js examples Reflector the build inlined (the mirror Mesh with its reflection camera rendering " +
+      "into a multisampled render target, plus `Reflector.ReflectorShader`) that the pond uses — vendor, not app " +
+      "code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+    what: "Reflector (three examples)",
+  },
+  {
+    id: "three-examples-sky",
+    file: "three-examples-sky.js",
+    span: 2,
+    first: (t) => /isSky = !0/.test(t),
+    last: (t) => /turbidity/.test(t),
+    guard: [/SkyShader/, /turbidity/, /rayleigh/, /cloudCoverage/],
+    title:
+      "three-examples-sky.js — bundled three.js examples Sky with its shader (vendor region, whole-file, never sliced)",
+    content:
+      "The three.js examples Sky the build inlined (the sky-dome Mesh plus `Sky.SkyShader` with its turbidity/" +
+      "rayleigh/mie uniforms and cloud parameters) — vendor, not app code. Vendor rule — indexed whole-file in " +
+      "readable/, never sliced or rewritten.",
+    what: "Sky (three examples)",
+  },
+  {
+    id: "three-examples-roundedboxgeometry",
+    file: "three-examples-roundedboxgeometry.js",
+    span: 1,
+    first: (t) => /RoundedBoxGeometry/.test(t) && /toNonIndexed/.test(t),
+    guard: [/RoundedBoxGeometry/, /\bparameters\b/],
+    title:
+      "three-examples-roundedboxgeometry.js — three.js examples/jsm/geometries/RoundedBoxGeometry (vendor, whole-file, never sliced)",
+    content:
+      "The three.js examples RoundedBoxGeometry the build inlined (`this.type = `RoundedBoxGeometry``, segmented " +
+      "rounded-box vertex/normal/uv construction) — vendor, not app code. Vendor rule — indexed whole-file in " +
+      "readable/, never sliced or rewritten.",
+    what: "RoundedBoxGeometry (three examples)",
+  },
+];
+
+// ── app clusters ────────────────────────────────────────────────────────
+// The app's own module boundaries are NOT recoverable from this bundle (one
+// flat classic script, no module markers, no source maps — verified in the
+// 2026-10-14 structure pass). The next-best honest structure is a hand-read
+// semantic cluster map over the app statements: each cluster is a run of
+// consecutive top-level statements, tiled in order (spans must sum to the app
+// statement count), and every cluster asserts `expects` regexes over its own
+// text so a re-shaped readable fails loudly. Slices are cut inside a cluster
+// only. The reading is recorded per section in split-spec.json (`cluster` +
+// `content`) so the inference is reviewable, never implied.
+const APP_CLUSTERS = [
+  // boot utilities that precede the three.js core-adjacent app code
+  {
+    slug: "boot-utils",
+    span: 7,
+    title: "asset URL resolver, preferences and the loading overlay",
+    expects: [/stillwater\.preferences\.v1/, /loading-message/],
+  },
+  {
+    slug: "light-shafts",
+    span: 3,
+    title: "the light-shaft field (gaussian footprints) and the cloud-shadow uniforms",
+    expects: [/uCloudShadow/, /Math\.exp\(-l \/ \(i\.width \* i\.width\)\)/],
+  },
+  {
+    slug: "weather",
+    span: 6,
+    title: "the weather cycle (rain/wet/cloud), the breeze shader chunk and the rain-cover shader",
+    expects: [/localBreezeDirection/, /uRainCover/],
+  },
+  {
+    slug: "island",
+    span: 6,
+    title: "the island: height field, shore outline polygon and the shape helpers",
+    expects: [/Math\.atan2\(\(t - 0\.4\) \/ 16\.4/, /\[-7, 8\]/],
+  },
+  {
+    slug: "landmarks",
+    span: 1,
+    title: "the landmark table of the island (named places and their lore lines)",
+    expects: [/The old landing/],
+  },
+  {
+    slug: "world-utils",
+    span: 4,
+    title: "the seeded PRNG, the sun-shadow pass, the shadow-material pass and the grass point scatter",
+    expects: [/1831565813/, /7500/],
+  },
+  {
+    slug: "lights",
+    span: 1,
+    title: "the lighting rig (sun, hemisphere, fill and sky)",
+    expects: [/hemisphere: r, fill: i, sky: a/],
+  },
+  {
+    slug: "render-pipeline",
+    span: 2,
+    title: "the woodland light-field pass and the pond render pipeline (GTAO + bloom + output composer)",
+    expects: [/woodland light field/, /setWoodlandLight/],
+  },
+  {
+    slug: "terrain",
+    span: 4,
+    title: "terrain sampling helpers (walkable height, mask texture and shoreline test)",
+    expects: [/Float32Array/],
+  },
+  {
+    slug: "material-tuning",
+    span: 1,
+    title: "the material tuning pass for the mill timber, leaves and lily pads",
+    expects: [/Oak\|Honey oak\|Cedar shingles\|Alder bark/, /waxy-lily-surface/],
+  },
+  {
+    slug: "canopy",
+    span: 9,
+    title: "the canopy data loader, the leaf shader chunks/materials and the forest instancing",
+    expects: [/alder-canopy/, /_leaf_anchor/],
+  },
+  {
+    slug: "placement",
+    span: 3,
+    title: "prop placement from the world tables (instances, LOD distances, shadow flags)",
+    expects: [/LOD/],
+  },
+  {
+    slug: "world-data",
+    span: 1,
+    title: "the world data table (placements, solids, water, spawn, camera path — the island's authored layout)",
+    expects: [/version: 12/],
+  },
+  {
+    slug: "paths",
+    span: 4,
+    title: "path helpers (distance-along-path, corridor tests, the landing walkway)",
+    expects: [/Eh\.points/],
+  },
+  {
+    slug: "scatter",
+    span: 7,
+    title: "the seeded scatter builders (props, undergrowth, stones) and the value-noise helpers",
+    expects: [/cp\(260926\)|cp\(91937\)|cp\(73016\)|cp\(180926\)/],
+  },
+  {
+    slug: "terrain-dressing",
+    span: 7,
+    title: "terrain dressing: the 1024/256 masks, tree scatter and terrain flattening under the buildings",
+    expects: [/new Uint8Array/],
+  },
+  {
+    slug: "waterwheel-kinematics",
+    span: 7,
+    title: "the waterwheel kinematics: the wheel spec (paddles, angular speed), gate flow and the element times",
+    expects: [/paddles/],
+  },
+  {
+    slug: "sluice-state",
+    span: 8,
+    title: "the sluice gate state tables (foot spots, gate target, spill grid)",
+    expects: [/qf\.gate/],
+  },
+  {
+    slug: "sluice-gate",
+    span: 2,
+    title: "the spring sluice gate and its winch/overflow rig",
+    expects: [/Spring sluice sliding gate/, /Porch sluice winch/],
+  },
+  {
+    slug: "mill-interior",
+    span: 11,
+    title: "the mill interior (constants, palette, daylight bake, doors and the mill rug)",
+    expects: [/#E7D6B8/, /Mill rug/],
+  },
+  {
+    slug: "waterwheel-build",
+    span: 5,
+    title: "the waterwheel build (gear config, rim geometry, materials) and the mill machinery it drives",
+    expects: [/Waterwheel-driven mill machinery/, /teeth: 80/],
+  },
+  {
+    slug: "ground-cover",
+    span: 1,
+    title: "the ground-cover pass",
+    expects: [/groundCover: t = !1/],
+  },
+  {
+    slug: "trees",
+    span: 5,
+    title: "tree instancing and scatter (hash, per-tree variation, LOD selection)",
+    expects: [/1\.73|2917/],
+  },
+  {
+    slug: "forest",
+    span: 8,
+    title: "forest assembly: bounds/chunks, the woodland scatter, distant hills and ridges",
+    expects: [/Wooded hills beyond the pond/],
+  },
+  {
+    slug: "grass-meadow",
+    span: 5,
+    title: "the meadow: canopy loading, curved tufts and the grass clusters",
+    expects: [/Curved meadow tuft/],
+  },
+  {
+    slug: "shrubs",
+    span: 2,
+    title: "shrub, fern and flower scatter",
+    expects: [/cp\(270927\)|cp\(290926\)/],
+  },
+  {
+    slug: "view-mode",
+    span: 1,
+    title: "the view-cycle helper (follow/keeper/explore)",
+    expects: [/aboard: t = !1, fishing: n = !1, immersive: r = !1/],
+  },
+  {
+    slug: "collision",
+    span: 4,
+    title: "collision and movement: obstacle boxes, ground/water tests and the move step",
+    expects: [/obstacles: i = \[\]|groundHeight/],
+  },
+  {
+    slug: "world-assembly",
+    span: 2,
+    title: "world assembly: the LOD name list and the island build order",
+    expects: [/tree1_lod/],
+  },
+  {
+    slug: "boat-hull",
+    span: 12,
+    title: "the boat hull: profile, hull width functions, contact shader and the hull mesh",
+    expects: [/hullContact/],
+  },
+  {
+    slug: "water-surface",
+    span: 7,
+    title: "the pond surface: wave uniforms/shaders, wake damping and the water geometry",
+    expects: [/uWaveTime/],
+  },
+  {
+    slug: "waterwheel-motion",
+    span: 9,
+    title: "waterwheel motion: paddle timing, spill forces and the wheel-impact sheets",
+    expects: [/uMillImpacts/],
+  },
+  {
+    slug: "pond-water",
+    span: 15,
+    title: "the pond water bodies: swell, stream lines, the reflective/refractive pond shader and the mill spill/spring surfaces",
+    expects: [/Reflective and refractive pond/, /Woodland spring water/],
+  },
+  {
+    slug: "pond-life",
+    span: 10,
+    title: "pond life: lily pads, ripples, fish feeding and the fish school",
+    expects: [/lilies/, /feed/],
+  },
+  {
+    slug: "fish",
+    span: 6,
+    title: "the fish: animation, tail shader and the school mesh build",
+    expects: [/tailWeight/],
+  },
+  {
+    slug: "birds",
+    span: 4,
+    title: "the birds (perch flights and wing flutter)",
+    expects: [/perch/],
+  },
+  {
+    slug: "shores",
+    span: 5,
+    title: "the shore dressing: reeds, the pond-side scatter and the falling-birch-leaf system",
+    expects: [/reeds/],
+  },
+  {
+    slug: "mill-state",
+    span: 12,
+    title: "the mill: state machine, doors/bridge, the drivetrain animation and its machinery helpers",
+    expects: [/sb\(e\)|1664525/],
+  },
+  {
+    slug: "audio",
+    span: 4,
+    title: "the audio engine (procedural buffers, loops and the ambient mixer)",
+    expects: [/sampleRate/],
+  },
+  {
+    slug: "mill-approach",
+    span: 2,
+    title: "mill approach paths for the keeper's walk",
+    expects: [/arrive: n = !0/],
+  },
+  {
+    slug: "boat-control",
+    span: 9,
+    title: "boat handling: drifting, the tiller/grip, the outboard and its materials",
+    expects: [/Charcoal/, /outboard/i],
+  },
+  {
+    slug: "boat-motion",
+    span: 7,
+    title: "boat motion: hull contact, water level and keyboard/touch control state",
+    expects: [/outboard-v2-/],
+  },
+  {
+    slug: "sky-build",
+    span: 1,
+    title: "the sky dome build (Sky at 10 km)",
+    expects: [/1e4/],
+  },
+  {
+    slug: "keeper-turn",
+    span: 12,
+    title: "the keeper's turn-in-place animations and the bone map",
+    expects: [/KeeperTurn/],
+  },
+  {
+    slug: "keeper-model",
+    span: 12,
+    title: "the keeper model: GLTF load, resident-motion json, bone rebinding and skinning helpers",
+    expects: [/resident-motion/, /FishingKeeper/],
+  },
+  {
+    slug: "keeper-poses",
+    span: 15,
+    title: "the keeper's pose system (idle/walk/fish poses, hand IK, the mill keeper rig)",
+    expects: [/Mill keeper/],
+  },
+  {
+    slug: "keeper-walk",
+    span: 16,
+    title: "keeper locomotion: chair path, walk-to targets and the locomotion state",
+    expects: [/chairPath|heading: Math\.PI \/ 2/],
+  },
+  {
+    slug: "fishing",
+    span: 10,
+    title: "fishing: rod, line, bobber and the cast/reel states",
+    expects: [/Fishing line/],
+  },
+  {
+    slug: "stove",
+    span: 3,
+    title: "the stove fire (shader, mesh and the contained wood fire)",
+    expects: [/Fire behind the stove glass|A small contained wood fire/],
+  },
+  {
+    slug: "keeper-room",
+    span: 6,
+    title: "the keeper's room and stove, cloth wear, clothing drips and the landing swim ladder",
+    expects: [/Landing swim ladder/],
+  },
+  {
+    slug: "boot-ui",
+    span: 9,
+    title: "boot ui: DOM refs, the loading screen hookup, panel wiring and the error toast",
+    expects: [/error.*toast|toast/, /loading-message|getElementById/],
+  },
+  {
+    slug: "renderer",
+    span: 21,
+    title: "the renderer, scene, lights and cameras (WebGL setup, shadow sun, resize)",
+    expects: [/#a5c2cc/, /setPixelRatio/],
+  },
+  {
+    slug: "map-2d",
+    span: 6,
+    title: "the 2D minimap (canvas, projection and the drawn island map)",
+    expects: [/createImageData/],
+  },
+  {
+    slug: "experience",
+    span: 16,
+    title: "the experience state machine (begin overlay, modes, transitions, HUD/panels)",
+    expects: [/experience/, /view-help|view-button/],
+  },
+  {
+    slug: "input",
+    span: 19,
+    title: "input: the keyboard map, pointer/wheel/drag handling and the drive buttons",
+    expects: [/KeyW/, /pointerdown|pointerup/],
+  },
+  {
+    slug: "inspector",
+    span: 6,
+    title: "the render inspector (debug panel, GPU timer queries, frame counters)",
+    expects: [/render-inspector/, /EXT_disjoint_timer_query/],
+  },
+  {
+    slug: "boot",
+    span: 4,
+    title: "the boot sequence and the frame loop (load, warm-up, error fallback)",
+    expects: [/The woodland could not finish loading/],
+  },
+];
 
 async function main() {
   const { mod: prettier, at } = await loadPrettier();
@@ -278,7 +846,7 @@ async function main() {
   if (!bundleRel || jsRelsAll.length !== 1 + cfRels.length)
     throw new Error(`unexpected captured .js set: ${jsRelsAll.join(", ")}`);
 
-  // ── 1) JS: Cloudflare machinery -> wholeFile; the app bundle -> slices ──
+  // ── 1) JS: Cloudflare machinery -> wholeFile; the app bundle -> regions + clusters ──
   for (const rel of jsRelsAll) {
     const buf = captureBytes(rel);
     const text = buf.toString("utf8");
@@ -293,15 +861,16 @@ async function main() {
     const tag = tagOf(rel);
 
     if (rel !== bundleRel) {
-      const cls = WHOLE_FILE[tag];
+      const cls = WHOLE_FILE_JS[tag];
       if (!cls) throw new Error(`${rel}: no whole-file class recorded for a non-bundle JS capture`);
       if (cls.guard && !cls.guard(pretty))
         throw new Error(`${rel}: whole-file guard failed — readable changed shape`);
       sections.push({
-        file: `${tag}-vendor.js`,
+        file: cls.file,
         wholeFile: true,
         title: cls.title,
-        desc: `Lines 1-${lines.length} of ${sourceFile}: ${cls.desc}`,
+        content: cls.content,
+        desc: `Lines 1-${lines.length} of ${sourceFile}.`,
         note: "whole-file (third-party machinery rule): indexed in readable/, never sliced",
         startLine: 1,
         endLine: lines.length,
@@ -326,7 +895,7 @@ async function main() {
       continue;
     }
 
-    // ── the app bundle: vendor regions wholeFile, the rest statement-aligned ──
+    // ── the app bundle: vendor regions wholeFile, app clusters sliced ────
     const dbg = await prettier.__debug.parse(pretty, { parser: "babel" });
     const top = (dbg.ast.program || dbg.ast).body;
     const stmts = top.map((n) => ({
@@ -339,119 +908,59 @@ async function main() {
       if (stmts[i].startLine <= stmts[i - 1].endLine)
         throw new Error(`${rel}: statements ${i - 1}/${i} share a line — cannot slice at line boundaries`);
 
-    const findAfter = (from, pred) => {
-      for (let i = from + 1; i < stmts.length; i++) if (pred(stmts[i].text)) return i;
-      return -1;
-    };
-    const iPoly = stmts.findIndex((s) => ANCHOR.polyfill(s.text));
-    if (iPoly !== 0) throw new Error(`${rel}: first statement is not the Vite modulepreload polyfill`);
-    const iThreeA = findAfter(iPoly, ANCHOR.threeFirst);
-    const iThreeB = findAfter(iThreeA, ANCHOR.threeLast);
-    const iGltfA = findAfter(iThreeB, ANCHOR.gltfFirst);
-    const iGltfB = findAfter(iGltfA, ANCHOR.gltfLast);
-    const iMesh = findAfter(iGltfB, ANCHOR.meshopt);
-    if (iThreeA !== iPoly + 1)
-      throw new Error(`${rel}: three.js core does not directly follow the polyfill (statement ${iThreeA})`);
-    if ([iThreeB, iGltfA, iGltfB, iMesh].some((i) => i < 0))
-      throw new Error(
-        `${rel}: vendor anchors not found (three=${iThreeB}, gltf=${iGltfA}..${iGltfB}, meshopt=${iMesh}) — readable changed shape`,
-      );
-    if (iGltfA <= iThreeB + 1) throw new Error(`${rel}: no app code between three.js core and the GLTF addon`);
-    if (iMesh <= iGltfB + 1) throw new Error(`${rel}: no app code between the GLTF addon and the meshopt decoder`);
-    const appBetween = stmts
-      .slice(iThreeB + 1, iGltfA)
-      .map((s) => s.text)
-      .join("\n");
-    if (!/stillwater-assets/.test(appBetween))
-      throw new Error(`${rel}: app resume anchor (stillwater-assets meta reader) not found after the three.js core`);
-    const threeText = lines.slice(stmts[iThreeA].startLine - 1, stmts[iThreeB].endLine).join("\n");
-    for (const [re, what] of [
-      [/isWebGLRenderer/, "WebGLRenderer"],
-      [/window\.__THREE__ = `186`/, "three.js revision 186 registration"],
-      [/THREE\.WebGLRenderer:/, "WebGLRenderer error strings"],
-      [/#include </, "shader chunk include tables"],
-      [/gl_FragColor/, "shader source chunks"],
-      [/WebGLProgram/, "WebGLProgram"],
-    ])
-      if (!re.test(threeText)) throw new Error(`${rel}: three.js region guard failed (${what}) — readable changed shape`);
-    if (/stillwater-assets|woodland|alder|fern1/.test(threeText))
-      throw new Error(`${rel}: app string found inside the claimed three.js region — boundary is wrong`);
-    const gltfText = lines.slice(stmts[iGltfA].startLine - 1, stmts[iGltfB].endLine).join("\n");
-    for (const [re, what] of [
-      [/THREE\.GLTFLoader:/, "GLTFLoader"],
-      [/KHR_DRACO_MESH_COMPRESSION/, "DRACO mesh compression plugin"],
-      [/KHR_TEXTURE_TRANSFORM/, "texture transform plugin"],
-      [/setMeshoptDecoder/, "meshopt hook"],
-    ])
-      if (!re.test(gltfText)) throw new Error(`${rel}: GLTF addon guard failed (${what}) — readable changed shape`);
-    const meshText = stmts[iMesh].text;
-    for (const [re, what] of [
-      [/WebAssembly/, "embedded wasm"],
-      [/meshopt/i, "meshopt decoder"],
-    ])
-      if (!re.test(meshText)) throw new Error(`${rel}: meshopt region guard failed (${what}) — readable changed shape`);
-
-    const specials = [];
+    // ── locate every vendor region, in order, by content anchors ────────
     const covered = new Array(stmts.length).fill(false);
-    const claim = (a, b, block) => {
-      if (a < 0 || b < a || b >= stmts.length) throw new Error(`${rel}: bad ${block.file} range ${a}-${b}`);
-      for (let i = a; i <= b; i++) {
-        if (covered[i]) throw new Error(`${rel}: ${block.file} overlaps another block at statement ${i}`);
-        covered[i] = true;
+    let cursor = 0;
+    const regions = [];
+    for (const spec of REGION_SPECS) {
+      let i = cursor;
+      while (i < stmts.length && !spec.first(stmts[i].text)) i++;
+      if (i >= stmts.length) throw new Error(`${rel}: vendor region ${spec.id} not found (anchor missed)`);
+      if (spec.id === "vite-modulepreload-polyfill" && i !== 0)
+        throw new Error(`${rel}: first statement is not the Vite modulepreload polyfill`);
+      const j = i + spec.span - 1;
+      if (j >= stmts.length) throw new Error(`${rel}: vendor region ${spec.id} runs past EOF`);
+      if (spec.last && !spec.last(stmts[j].text))
+        throw new Error(`${rel}: vendor region ${spec.id} end anchor missed (last statement is not the recorded module tail)`);
+      const regionText = stmts.slice(i, j + 1).map((s) => s.text).join("\n");
+      for (const g of spec.guard)
+        if (!g.test(regionText)) throw new Error(`${rel}: vendor region ${spec.id} guard failed (${g}) — readable changed shape`);
+      for (let k = i; k <= j; k++) {
+        if (covered[k]) throw new Error(`${rel}: vendor region ${spec.id} overlaps region before it at statement ${k}`);
+        covered[k] = true;
       }
-      specials.push({ ...block, A: stmts[a].startLine, B: stmts[b].endLine });
-    };
-    claim(iPoly, iPoly, {
-      kind: "whole",
-      file: `${tag}-polyfill-machinery.js`,
-      title: `${tag} — Vite modulepreload polyfill (build machinery, whole-file, never sliced)`,
-      body: "the Vite-generated modulepreload polyfill IIFE (`link[rel=modulepreload]` relList.supports check + fetch warm-up) — build machinery, not app code; indexed whole-file in readable/, never sliced.",
-    });
-    claim(iThreeA, iThreeB, {
-      kind: "whole",
-      file: `${tag}-three-vendor.js`,
-      title: `${tag} — bundled three.js r186 core (vendor region, whole-file, never sliced)`,
-      body:
-        "the bundled three.js r186 engine core (constants, math, color management, textures, geometries, " +
-        "materials, shader chunk/lib tables, objects, the `window.__THREE__` revision-186 registration and the " +
-        "WebGLRenderer) — vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced or " +
-        "rewritten.",
-    });
-    claim(iGltfA, iGltfB, {
-      kind: "whole",
-      file: `${tag}-gltf-vendor.js`,
-      title: `${tag} — bundled GLTFLoader addon with its KHR_* plugins (vendor region, whole-file, never sliced)`,
-      body:
-        "the three.js examples/jsm GLTFLoader the build inlined (the Loader subclass with its DRACOLoader/KTX2/" +
-        "meshopt hooks, `THREE.GLTFLoader:` error strings, the KHR_* plugin classes and their OPAQUE/MASK/BLEND " +
-        "material enum) — vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced or " +
-        "rewritten.",
-    });
-    claim(iMesh, iMesh, {
-      kind: "whole",
-      file: `${tag}-meshopt-vendor.js`,
-      title: `${tag} — bundled MeshoptDecoder module with embedded wasm (vendor region, whole-file, never sliced)`,
-      body:
-        "the meshoptimizer decoder module the build inlined (its own minified runtime plus the embedded wasm " +
-        "loaded through `WebAssembly.instantiate`) that the app hands to the GLTFLoader via " +
-        "`setMeshoptDecoder` — vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced " +
-        "or rewritten.",
-    });
-
-    // runs of uncovered statements -> windows
-    const runs = [];
-    for (let i = 0; i < stmts.length; i++) {
-      if (covered[i]) continue;
-      const run = [stmts[i]];
-      while (i + 1 < stmts.length && !covered[i + 1]) run.push(stmts[++i]);
-      runs.push(run);
+      regions.push({ ...spec, i, j, startLine: stmts[i].startLine, endLine: stmts[j].endLine });
+      cursor = j + 1;
     }
+
+    // ── the app statements: tile into the reviewed semantic clusters ─────
+    const appIdx = [];
+    for (let k = 0; k < stmts.length; k++) if (!covered[k]) appIdx.push(k);
+    const spanSum = APP_CLUSTERS.reduce((n, c) => n + c.span, 0);
+    if (spanSum !== appIdx.length)
+      throw new Error(
+        `${rel}: app cluster map covers ${spanSum} statement(s) but the bundle has ${appIdx.length} app statement(s) — re-read the clusters`,
+      );
+    const clusterOf = new Map(); // statement index -> cluster record
+    let p = 0;
     const slices = [];
-    for (const run of runs) for (const w of windowize(run)) slices.push(w);
+    for (const c of APP_CLUSTERS) {
+      const idxs = appIdx.slice(p, p + c.span);
+      const clusterText = idxs.map((k) => stmts[k].text).join("\n");
+      for (const e of c.expects)
+        if (!e.test(clusterText))
+          throw new Error(`${rel}: app cluster ${c.slug} expectation failed (${e}) — readable changed shape`);
+      for (const k of idxs) clusterOf.set(k, c);
+      p += c.span;
+      const windows = windowize(idxs.map((k) => stmts[k]));
+      windows.forEach((w, n) => slices.push({ cluster: c, w, ord: n + 1 }));
+    }
 
     // blocks in line order, then re-tile so every line of the pretty is owned
-    const blocks = [...specials, ...slices.map((w) => ({ kind: "slice", A: w.startLine, B: w.endLine, count: w.count }))];
-    blocks.sort((a, b) => a.A - b.A);
+    const blocks = [
+      ...regions.map((r) => ({ kind: "whole", region: r, A: r.startLine, B: r.endLine })),
+      ...slices.map((s) => ({ kind: "slice", cluster: s.cluster, w: s.w, ord: s.ord, A: s.w.startLine, B: s.w.endLine })),
+    ].sort((a, b) => a.A - b.A);
     for (let i = 0; i < blocks.length; i++) {
       if (i === 0) blocks[i].A = 1;
       if (i + 1 < blocks.length) blocks[i].B = blocks[i + 1].A - 1;
@@ -460,18 +969,20 @@ async function main() {
 
     let nn = 0;
     let perFileVendor = 0;
+    let perFileClusters = new Set();
     for (const b of blocks) {
       if (b.kind === "slice") {
         nn++;
-        const num = String(nn).padStart(2, "0");
+        const c = b.cluster;
+        perFileClusters.add(c.slug);
+        const num = String(b.ord).padStart(2, "0");
         const body = lines.slice(b.A - 1, b.B).join("\n") + "\n";
         const ms = markers(body);
-        const topWord = ms.length ? ms[0][0] : /^\s*import\b/.test(body) ? "imports" : tag.toLowerCase();
-        const oversized = b.count === 1 && b.B - b.A + 1 > MAX_WINDOW;
-        const file = `${tag}-${num}.js`;
+        const oversized = b.w.count === 1 && b.B - b.A + 1 > MAX_WINDOW;
+        const file = `${c.slug}-${num}.js`;
         const sliceText =
-          `// ${tag} ${num} — ${topWord}\n` +
-          `// Lines ${b.A}-${b.B} of ${sourceFile} (statement-aligned).\n` +
+          `// ${file} — ${c.title}\n` +
+          `// Lines ${b.A}-${b.B} of ${sourceFile} (cluster ${c.slug}, statement-aligned).\n` +
           body;
         const chk = parses(sliceText);
         if (!chk.ok) throw new Error(`generated src/${file} does not parse standalone: ${chk.why}`);
@@ -479,7 +990,9 @@ async function main() {
         written.src.add(file);
         sections.push({
           file,
-          title: `${tag} ${num} — ${topWord}`,
+          cluster: c.slug,
+          content: c.title,
+          title: `${file} — ${c.title}`,
           desc: `${oversized ? "Oversized single declaration (kept whole). " : ""}Lines ${b.A}-${b.B}. Markers: ${markerText(ms)}.`,
           startLine: b.A,
           endLine: b.B,
@@ -487,11 +1000,13 @@ async function main() {
         });
       } else {
         perFileVendor++;
+        const r = b.region;
         sections.push({
-          file: b.file,
+          file: r.file,
           wholeFile: true,
-          title: b.title,
-          desc: `Lines ${b.A}-${b.B} of ${sourceFile}: ${b.body}`,
+          title: r.title,
+          content: r.content,
+          desc: `Lines ${b.A}-${b.B} of ${sourceFile}.`,
           note: "whole-file region (vendor/machinery rule): indexed in readable/, never sliced",
           startLine: b.A,
           endLine: b.B,
@@ -513,10 +1028,15 @@ async function main() {
       tag,
       statements: stmts.length,
       slices: nn,
-      derived: `readable + ${nn} statement-aligned slice(s) + ${perFileVendor} wholeFile vendor region(s)`,
+      vendorRegions: perFileVendor,
+      clusters: [...perFileClusters],
+      derived:
+        `readable + ${nn} statement-aligned slice(s) across ${perFileClusters.size} app cluster(s) + ` +
+        `${perFileVendor} wholeFile vendor region(s)`,
     });
     console.log(
-      `derive: ${rel} -> ${sourceFile} (${lines.length} lines, ${stmts.length} stmts, ${nn} slices, ${perFileVendor} wholeFile vendor regions)`,
+      `derive: ${rel} -> ${sourceFile} (${lines.length} lines, ${stmts.length} stmts, ${nn} slices, ` +
+        `${perFileClusters.size} app clusters, ${perFileVendor} wholeFile vendor regions)`,
     );
   }
 
@@ -532,9 +1052,10 @@ async function main() {
     const lines = linesOf(pretty);
     const tag = tagOf(rel);
     sections.push({
-      file: `${tag}.css`,
+      file: "stylesheet.css",
       wholeFile: true,
-      title: `${tag} — stylesheet (whole-file, never sliced)`,
+      title: "stylesheet.css — stylesheet (whole-file, never sliced)",
+      content: `The capture stylesheet ${rel} — whole-file (stylesheet rule): indexed whole in readable/, never sliced.`,
       desc: `Lines 1-${lines.length} of ${sourceFile}. Whole-file (stylesheet rule): the capture stylesheet is indexed whole in readable/, never sliced.`,
       note: "whole-file (stylesheet, not sliced): CSS is indexed whole in readable/",
       startLine: 1,
@@ -644,17 +1165,20 @@ async function main() {
 
       if (b.kind !== "script" || isCfMachinery(b.text)) {
         // stylesheet rule / third-party machinery rule: wholeFile, never sliced
-        const what = isCfMachinery(b.text)
+        const cf = isCfMachinery(b.text);
+        const what = cf
           ? "Cloudflare bot-challenge injection (third-party machinery; token rotates per response)"
           : "inline block";
-        if (isCfMachinery(b.text) && !/_cf_chl_opt|challenge-platform/.test(pretty))
+        if (cf && !/_cf_chl_opt|challenge-platform/.test(pretty))
           throw new Error(`${sourceFile}: Cloudflare machinery guard failed — readable changed shape`);
+        const file = cf ? "cloudflare-injection.js" : `inline-${b.kind}.js`;
         sections.push({
-          file: `${tag}.${twinExt}`,
+          file,
           wholeFile: true,
-          title: `${tag} — ${what} (whole-file, never sliced)`,
+          title: `${file} — ${what} (whole-file, never sliced)`,
+          content: `The entry document's inline ${b.kind} block (${b.bytes} B at bytes ${b.contentStart}-${b.contentEnd} of ${rel}) — ${what}. Whole-file: indexed whole and never sliced.`,
           desc: `Lines 1-${lines.length} of ${sourceFile}. Whole-file: the entry document's inline ${b.kind} block (${b.bytes} B at bytes ${b.contentStart}-${b.contentEnd} of ${rel}) is indexed whole and never sliced.`,
-          note: `whole-file (${isCfMachinery(b.text) ? "third-party machinery" : "inline block"}, not sliced)`,
+          note: `whole-file (${cf ? "third-party machinery" : "inline block"}, not sliced)`,
           startLine: 1,
           endLine: lines.length,
           sourceFile,
@@ -681,48 +1205,56 @@ async function main() {
       }
 
       // ── inline app script: statement-aligned slicing ────────────────────
-      const dbg = await prettier.__debug.parse(pretty, { parser: "babel" });
-      const rootBody = (dbg.ast.program || dbg.ast).body;
-      const stmts = rootBody.map((n) => ({
+      // The recovery handler is the app's boot-error fallback: one statement
+      // plus a header comment (the comment is a wholeFile head section and the
+      // statement is the slice), cluster `recovery-handler`.
+      const CLUSTER = {
+        slug: "recovery-handler",
+        title: "the inline recovery handler — the entry document's boot-error fallback",
+      };
+      const dbg2 = await prettier.__debug.parse(pretty, { parser: "babel" });
+      const rootBody = (dbg2.ast.program || dbg2.ast).body;
+      const stmts2 = rootBody.map((n) => ({
         node: n,
         startLine: lineOf(pretty, n.start),
         endLine: lineOf(pretty, n.end),
         text: pretty.slice(n.start, n.end),
       }));
-      if (!stmts.length) throw new Error(`${sourceFile}: no sliceable statements`);
-      for (let i = 1; i < stmts.length; i++)
-        if (stmts[i].startLine <= stmts[i - 1].endLine)
+      if (!stmts2.length) throw new Error(`${sourceFile}: no sliceable statements`);
+      for (let i = 1; i < stmts2.length; i++)
+        if (stmts2[i].startLine <= stmts2[i - 1].endLine)
           throw new Error(`${sourceFile}: statements ${i - 1}/${i} share a line — cannot slice at line boundaries`);
 
       const specials = [];
-      const lastStmt = stmts[stmts.length - 1];
-      if (stmts[0].startLine > 1) {
-        const headText = lines.slice(0, stmts[0].startLine - 1).join("\n");
+      const lastStmt = stmts2[stmts2.length - 1];
+      if (stmts2[0].startLine > 1) {
+        const headText = lines.slice(0, stmts2[0].startLine - 1).join("\n");
         if (!/Keep recovery available/.test(headText))
           throw new Error(`${sourceFile}: head guard failed — readable changed shape`);
         specials.push({
           kind: "whole",
-          file: `${tag}-head.js`,
+          file: `${CLUSTER.slug}-head.js`,
           A: 1,
-          B: stmts[0].startLine - 1,
-          title: `${tag}-head — recovery handler header comment (whole-file, never sliced)`,
-          body: "The inline recovery handler's leading comment (`// Keep recovery available even if the application bundle cannot download.`) — indexed whole-file in readable/, never sliced; the statement below is the src/ slice.",
+          B: stmts2[0].startLine - 1,
+          title: `${CLUSTER.slug}-head.js — recovery handler header comment (whole-file, never sliced)`,
+          content:
+            "The inline recovery handler's leading comment (`// Keep recovery available even if the application bundle cannot download.`) — indexed whole-file in readable/, never sliced; the statement below is the src/ slice.",
         });
       }
       if (lastStmt.endLine < lines.length) {
         specials.push({
           kind: "skip",
-          file: `${tag}-tail.js`,
+          file: `${CLUSTER.slug}-tail.js`,
           A: lastStmt.endLine + 1,
           B: lines.length,
-          title: `${tag}-tail — trailing block close (not sliced)`,
-          desc: `Lines ${lastStmt.endLine + 1}-${lines.length}. The inline block's trailing indentation close — carries no statements of its own, so it is indexed only.`,
+          title: `${CLUSTER.slug}-tail.js — trailing block close (not sliced)`,
+          content: `Lines ${lastStmt.endLine + 1}-${lines.length}. The inline block's trailing indentation close — carries no statements of its own, so it is indexed only.`,
         });
       }
-      const slices = windowize(stmts);
+      const windows = windowize(stmts2);
       const blocksAll = [
         ...specials,
-        ...slices.map((w) => ({ kind: "slice", A: w.startLine, B: w.endLine, count: w.count })),
+        ...windows.map((w, n) => ({ kind: "slice", w, ord: n + 1, A: w.startLine, B: w.endLine })),
       ].sort((a, b) => a.A - b.A);
       for (let i = 0; i < blocksAll.length; i++) {
         if (i === 0) blocksAll[i].A = 1;
@@ -735,14 +1267,13 @@ async function main() {
       for (const bl of blocksAll) {
         if (bl.kind === "slice") {
           nn++;
-          const num = String(nn).padStart(2, "0");
+          const num = String(bl.ord).padStart(2, "0");
           const body = lines.slice(bl.A - 1, bl.B).join("\n") + "\n";
           const ms = markers(body);
-          const topWord = ms.length ? ms[0][0] : tag.toLowerCase();
-          const file = `${tag}-${num}.js`;
+          const file = `${CLUSTER.slug}-${num}.js`;
           const sliceText =
-            `// ${tag} ${num} — ${topWord}\n` +
-            `// Lines ${bl.A}-${bl.B} of ${sourceFile} (statement-aligned).\n` +
+            `// ${file} — ${CLUSTER.title}\n` +
+            `// Lines ${bl.A}-${bl.B} of ${sourceFile} (cluster ${CLUSTER.slug}, statement-aligned).\n` +
             body;
           const chk = parses(sliceText);
           if (!chk.ok) throw new Error(`generated src/${file} does not parse standalone: ${chk.why}`);
@@ -750,7 +1281,9 @@ async function main() {
           written.src.add(file);
           sections.push({
             file,
-            title: `${tag} ${num} — ${topWord}`,
+            cluster: CLUSTER.slug,
+            content: CLUSTER.title,
+            title: `${file} — ${CLUSTER.title}`,
             desc: `Lines ${bl.A}-${bl.B}. Markers: ${markerText(ms)}.`,
             startLine: bl.A,
             endLine: bl.B,
@@ -762,7 +1295,8 @@ async function main() {
             file: bl.file,
             wholeFile: true,
             title: bl.title,
-            desc: `Lines ${bl.A}-${bl.B} of ${sourceFile}: ${bl.body}`,
+            content: bl.content,
+            desc: `Lines ${bl.A}-${bl.B} of ${sourceFile}: ${bl.content}`,
             note: "whole-file region (header comment rule): indexed in readable/, never sliced",
             startLine: bl.A,
             endLine: bl.B,
@@ -774,7 +1308,8 @@ async function main() {
             file: bl.file,
             skipped: true,
             title: bl.title,
-            desc: bl.desc,
+            content: bl.content,
+            desc: bl.content,
             startLine: bl.A,
             endLine: bl.B,
             sourceFile,
@@ -798,15 +1333,16 @@ async function main() {
         prettyPasses: 1,
         idempotent: true,
         tag,
-        statements: stmts.length,
+        statements: stmts2.length,
         slices: nn,
+        clusters: [CLUSTER.slug],
         derived:
           `readable + ${nn} statement-aligned slice(s)` +
           (perFileWhole ? ` + ${perFileWhole} wholeFile region(s)` : "") +
           (perFileSkipped ? ` + ${perFileSkipped} skipped section(s)` : ""),
       });
       console.log(
-        `derive: ${rel} inline ${b.kind} #${b.block} -> ${sourceFile} (${lines.length} lines, ${stmts.length} stmts, ${nn} slices, ${perFileWhole} wholeFile, ${perFileSkipped} skipped)`,
+        `derive: ${rel} inline ${b.kind} #${b.block} -> ${sourceFile} (${lines.length} lines, ${stmts2.length} stmts, ${nn} slices, ${perFileWhole} wholeFile, ${perFileSkipped} skipped)`,
       );
     }
     if (entryRec.blocks.length) inlineMap.sources.push(entryRec);
@@ -833,6 +1369,7 @@ async function main() {
   const cssSources = sources.filter((s) => s.sourceFile.endsWith(".pretty.css"));
   const slicedSources = jsSources.filter((s) => s.slices > 0);
   const firstSlices = sections.filter((s) => !s.wholeFile && !s.skipped);
+  const clusterCount = new Set(sections.filter((s) => s.cluster).map((s) => s.cluster)).size;
   const spec = {
     project: "stillwater",
     kind: "statement-aligned-slices",
@@ -846,22 +1383,30 @@ async function main() {
       "search finds nothing for the project or the slug), so the mirror stands. Derived pipeline: capture → pinned " +
       "prettier 3.9.6 (module API, default options, single pass verified idempotent — never the CLI: it respects " +
       ".gitignore and can silently echo its input) → readable/<name>.pretty.js|css per captured JS/CSS file " +
-      "(dirs flattened with __; every pretty provably NOT byte-identical to its capture source) → " +
-      "statement-aligned slices src/<tag>-NN.js of the app bundle (top-level declaration boundaries only, " +
-      "~250-350 line windows; oversized single declarations stay whole) with an exact 2-line provenance header. " +
-      "Every slice parses standalone under `node --input-type=module --check -` and round-trips byte-exact to its " +
-      "recorded readable line range. Vendor rule — wholeFile sections, never sliced, all content-anchored and " +
-      "asserted: the Vite modulepreload polyfill (build machinery), the three.js r186 core (constants .. " +
-      "WebGLRenderer, `window.__THREE__ = '186'`), the bundled GLTFLoader addon with its KHR_* plugins and " +
-      "DRACO/KTX2/meshopt hooks, and the MeshoptDecoder module with its embedded wasm. The Cloudflare " +
-      "bot-challenge script (cdn-cgi/challenge-platform/scripts/jsd/main.js, recorded `dynamic: true` — it " +
-      "rotates per response) is third-party machinery: wholeFile, never sliced. Stylesheet rule: " +
-      "assets/index-D7i12YD8.css is wholeFile. Inline <script> scan: index.html carries TWO inline script " +
-      "blocks — the app's recovery handler (head comment wholeFile + one statement-aligned slice) and the " +
-      "Cloudflare bot-challenge injection (third-party machinery, wholeFile); their byte ranges + sha256 are " +
-      "recorded in readable/index-inline-map.json. Identifiers in src/ are the bundle's own minified names — the " +
-      "rename campaign (PLAN §5) is recorded as an open task in README.md, not claimed here. Capture bytes are " +
-      "untouched by everything above; re-cut with `node tools/derive.mjs` after any capture refresh. " +
+      "(dirs flattened with __; every pretty provably NOT byte-identical to its capture source) → the app bundle " +
+      "cut into statement-aligned slices src/<cluster>-NN.js. STRUCTURE (2026-10-14 pass): the bundle is one flat " +
+      "classic script with NO module-factory tables and NO source maps (external .map or inline data: URI — both " +
+      "verified absent), so the app's own module boundaries are not recoverable; what IS recoverable are the VENDOR " +
+      "MODULE REGIONS the bundler inlined whole, each a run of consecutive top-level statements claimed as a " +
+      "wholeFile section and content-anchored (first/last statement + region guard): the Vite modulepreload " +
+      "polyfill (build machinery), the three.js r186 core (constants .. WebGLRenderer, `window.__THREE__ = '186'`), " +
+      "three.js examples HDRLoader, the examples postprocessing stack (Pass/FullScreenQuad/RenderPass, the GTAO " +
+      "shader objects, PoissonDenoiseShader, SimplexNoise, GTAOPass, CopyShader, LuminosityHighPassShader, " +
+      "UnrealBloomPass, OutputShader, OutputPass, ShaderPass — the merged final declaration also carries the app's " +
+      "light-field shader constants), BufferGeometryUtils, SkeletonUtils clone, GLTFLoader with its KHR_* plugins " +
+      "and the GLTFParser, the MeshoptDecoder with embedded wasm, OrbitControls, Reflector, Sky and " +
+      "RoundedBoxGeometry. Every other top-level statement is app code: it is cut ONLY inside one semantic cluster " +
+      "of the reviewed cluster map below (top-level declaration boundaries only, ≤600-line windows, an oversized " +
+      "single declaration stays whole), and every cluster asserts its expected content at derive time. Vendors are " +
+      "never sliced and never renamed; the Cloudflare bot-challenge script (dynamic: true) is wholeFile machinery; " +
+      "assets/index-D7i12YD8.css is wholeFile (stylesheet rule). Inline <script> scan: index.html carries TWO " +
+      "inline script blocks — the app's recovery handler (head comment wholeFile + one statement-aligned slice) " +
+      "and the Cloudflare bot-challenge injection (wholeFile); byte ranges + sha256 are recorded in " +
+      "readable/index-inline-map.json. Identifiers in the pristine src/ layer are the bundle's own minified names; " +
+      "the reviewed semantic rename layer (tools/names.json → tools/apply-names.mjs, recorded in rename-map.json) " +
+      "is applied on top and gated by tools/verify-rename.mjs + tools/check-chunk.mjs, and the rebuild is " +
+      "`node tools/derive.mjs && node tools/apply-names.mjs --all && node tools/recover-scoped-map.mjs`. Capture " +
+      "bytes are untouched by everything above; re-cut with `node tools/derive.mjs` after any capture refresh. " +
       "`node tools/audit.js` is the gate.",
     renderOptions: {
       _default:
@@ -873,7 +1418,7 @@ async function main() {
     source:
       `readable/: ${jsSources.length} JS pretties (${slicedSources.length} sliced script source(s), ` +
       `${jsSources.length - slicedSources.length} wholeFile machinery/vendor) + ${cssSources.length} CSS pretties; ` +
-      `src/: ${slicedSources.reduce((n, s) => n + s.slices, 0)} statement-aligned slices across ${slicedSources.length} script source(s); ` +
+      `src/: ${slicedSources.reduce((n, s) => n + s.slices, 0)} statement-aligned slices across ${clusterCount} app cluster(s); ` +
       `${sections.filter((s) => s.skipped).length} skipped section(s); ${sections.filter((s) => s.wholeFile).length} wholeFile section(s); ` +
       `capture: ${captured.length} files under .upstream/manifest.json; inline scan: ${inlineFiles.join(", ")} ` +
       `(${inlineMap.sources.reduce((n, s) => n + s.blocks.length, 0)} inline content block(s)); derived ${TODAY}.`,
@@ -950,11 +1495,24 @@ async function main() {
     `derive: ${written.readable.size} readable file(s), ${written.src.size} src slices ` +
       `(${parsed}/${ranged} parse standalone, ${roundOK}/${ranged} round-trip byte-exact), ` +
       `${sections.filter((s) => s.skipped).length} skipped, ${sections.filter((s) => s.wholeFile).length} wholeFile, ` +
-      `${prettyParsed} pretty js parse clean, ${notRendered.length} notRendered, ${pruned} orphan(s) pruned — ` +
+      `${clusterCount} app cluster(s), ${prettyParsed} pretty js parse clean, ${notRendered.length} notRendered, ${pruned} orphan(s) pruned — ` +
       `self-check ${bad ? bad + " FAILURE(S)" : "clean"}`,
   );
   if (bad) process.exit(1);
 }
+
+// the Cloudflare challenge script: third-party machinery, whole-file
+const WHOLE_FILE_JS = {
+  "cdn-cgi__challenge-platform__scripts__jsd__main": {
+    file: "cloudflare-challenge-platform.js",
+    title:
+      "cloudflare-challenge-platform.js — Cloudflare bot-challenge script (third-party machinery, whole-file, never sliced)",
+    content:
+      "The Cloudflare bot-challenge script the entry document's injected inline block loads (`/cdn-cgi/challenge-platform/scripts/jsd/main.js`) — Cloudflare machinery, not app code; the deployment rotates it per response (recorded `dynamic: true`), so it is indexed whole-file in readable/ and never sliced or rewritten.",
+    guard: (t) => /_cf_chl_opt/.test(t),
+    what: "Cloudflare bot-challenge script",
+  },
+};
 
 main().catch((e) => {
   console.error(e);

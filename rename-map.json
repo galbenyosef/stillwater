@@ -1,0 +1,3560 @@
+{
+  "note": "Per-file rename maps for stillwater's src/ slices, recovered by token alignment from the committed files against their pristine readable ranges (split-spec.json). `files` is word-boundary (every eligible occurrence of the spelling was renamed to that target); `scoped` is token-index addressed into the readable range's token stream (only those positions were renamed). Recover with tools/recover-scoped-map.mjs; re-checked by tools/verify-rename.mjs, tools/check-chunk.mjs and tools/audit.js.",
+  "rules": "tools/names.json",
+  "files": {
+    "boot-utils-01.js": {
+      "c": "extra",
+      "d": "armRecovery",
+      "df": "preferencesKey",
+      "f": "paint",
+      "ff": "normalizePreferences",
+      "hf": "createLoadingScreen",
+      "l": "recoveryTimer",
+      "lf": "resolveAssetUrl",
+      "mf": "savePreferences",
+      "o": "recoveryEl",
+      "pf": "loadPreferences",
+      "s": "ready",
+      "u": "done",
+      "uf": "revisionUrlModifier"
+    },
+    "light-shafts-01.js": {
+      "Af": "cloudSunlightGlsl",
+      "Mf": "createCloudShadows",
+      "kf": "smoothRange",
+      "xf": "shaftLightField"
+    },
+    "weather-01.js": {
+      "Bf": "createBreezeState",
+      "Gf": "rainShaderChunk",
+      "J": "clampValue",
+      "Jf": "millMachineryOrigins",
+      "Rf": "breezeUniform",
+      "Uf": "weatherCycleAt",
+      "Vf": "breezeShaderChunk",
+      "Wf": "createWeather",
+      "Zf": "smoothStep",
+      "qf": "sluiceSpec"
+    },
+    "island-01.js": {
+      "$f": "staticObstacles",
+      "J": "clampValue",
+      "Jf": "millMachineryOrigins",
+      "Qf": "shoreOutline",
+      "Y": "islandHeight",
+      "Zf": "smoothStep",
+      "ap": "slideToWalkable",
+      "ep": "dynamicObstacles",
+      "ip": "walkableFacing",
+      "np": "shoreDistance",
+      "qf": "sluiceSpec",
+      "rp": "insideIsland",
+      "tp": "setDynamicObstacles"
+    },
+    "landmarks-01.js": {
+      "op": "landmarks"
+    },
+    "world-utils-01.js": {
+      "Gf": "rainShaderChunk",
+      "cp": "createRandom",
+      "dp": "scatterGrassPoints",
+      "up": "applyWeatherMaterials"
+    },
+    "lights-01.js": {
+      "Wf": "createWeather",
+      "a": "sky",
+      "c": "shadow",
+      "d": "baseline",
+      "dp": "scatterGrassPoints",
+      "f": "sunCool",
+      "fp": "setupLighting",
+      "i": "fill",
+      "l": "uniforms",
+      "m": "applyWeather",
+      "p": "fogShade",
+      "r": "hemisphere",
+      "s": "weather",
+      "u": "grass",
+      "up": "applyWeatherMaterials"
+    },
+    "render-pipeline-01.js": {
+      "Af": "cloudSunlightGlsl",
+      "Bp": "createWoodlandLightField",
+      "Vp": "createRenderPipeline"
+    },
+    "terrain-01.js": {
+      "J": "clampValue",
+      "Qm": "waterlineEllipse",
+      "Xm": "sampleTerrain",
+      "Y": "islandHeight",
+      "Zm": "buildTerrainSamples",
+      "c": "slope",
+      "d": "nz",
+      "l": "clearance",
+      "u": "nx"
+    },
+    "material-tuning-01.js": {
+      "i": "isRock",
+      "n": "timberWet",
+      "r": "isFoliage",
+      "th": "tuneMaterial"
+    },
+    "canopy-01.js": {
+      "Rf": "breezeUniform",
+      "Vf": "breezeShaderChunk",
+      "th": "tuneMaterial"
+    },
+    "placement-01.js": {
+      "vh": "placeInstance",
+      "yh": "populateWorld"
+    },
+    "world-data-01.js": {
+      "Ch": "bridgePlacement",
+      "Dh": "benchArea",
+      "Eh": "shorePath",
+      "Oh": "benchTop",
+      "Sh": "pathPlan",
+      "Y": "islandHeight",
+      "kh": "benchApproach",
+      "xh": "worldData"
+    },
+    "paths-01.js": {
+      "Ah": "distanceToPath",
+      "Ch": "bridgePlacement",
+      "Dh": "benchArea",
+      "Eh": "shorePath",
+      "Mh": "insideBenchArea",
+      "Nh": "interiorFloorHeight",
+      "Y": "islandHeight",
+      "jh": "onPath",
+      "kh": "benchApproach"
+    },
+    "scatter-01.js": {
+      "Bh": "hillNoise",
+      "Dh": "benchArea",
+      "Fh": "scatterPebbles",
+      "Ih": "scatterTrees",
+      "Lh": "scatterUndergrowth",
+      "Ph": "scatterRocks",
+      "Rh": "hash2",
+      "Y": "islandHeight",
+      "cp": "createRandom",
+      "jh": "onPath",
+      "np": "shoreDistance",
+      "zh": "valueNoise"
+    },
+    "terrain-dressing-01.js": {
+      "Bh": "hillNoise",
+      "Dh": "benchArea",
+      "Eh": "shorePath",
+      "Gh": "scatterMillRocks",
+      "Hh": "findMillAnchors",
+      "Jf": "millMachineryOrigins",
+      "Jh": "flattenTerrain",
+      "Kh": "pathVec2Table",
+      "Uh": "boxDistance",
+      "Vh": "buildTerrainMask",
+      "Wh": "buildMillMask",
+      "Y": "islandHeight",
+      "Zf": "smoothStep",
+      "cp": "createRandom",
+      "jh": "onPath",
+      "kh": "benchApproach",
+      "np": "shoreDistance",
+      "zh": "valueNoise"
+    },
+    "waterwheel-kinematics-01.js": {
+      "$h": "wheelRimClearance",
+      "J": "clampValue",
+      "Qh": "paddlePhaseAt",
+      "Xh": "wheelAngleAt",
+      "Yh": "waterwheelSpec",
+      "Zf": "smoothStep",
+      "Zh": "TAU",
+      "ag": "spillElementAt",
+      "eg": "wheelRimSpeed",
+      "ig": "ballisticPointAt",
+      "ng": "paddleInWater",
+      "rg": "wheelSpillElement",
+      "tg": "wheelFallTime"
+    },
+    "sluice-state-01.js": {
+      "Yh": "waterwheelSpec",
+      "qf": "sluiceSpec"
+    },
+    "sluice-gate-01.js": {
+      "Og": "buildSluiceGate",
+      "kg": "buildSluiceWinch",
+      "qf": "sluiceSpec"
+    },
+    "mill-interior-01.js": {
+      "Lg": "millMaterialFor",
+      "Mg": "buildMillInterior",
+      "Ng": "millPalette",
+      "X": "millLayout",
+      "zg": "buildMillRug"
+    },
+    "mill-interior-02.js": {
+      "X": "millLayout"
+    },
+    "waterwheel-build-01.js": {
+      "Qg": "buildMillMachinery",
+      "Yg": "buildWheelRim"
+    },
+    "ground-cover-01.js": {
+      "$g": "buildGroundCover"
+    },
+    "trees-01.js": {
+      "Y": "islandHeight",
+      "cp": "createRandom",
+      "np": "shoreDistance"
+    },
+    "forest-01.js": {
+      "Y": "islandHeight",
+      "Zf": "smoothStep",
+      "cp": "createRandom",
+      "f_": "buildDistantHills",
+      "yh": "populateWorld"
+    },
+    "grass-meadow-01.js": {
+      "Ah": "distanceToPath",
+      "Dh": "benchArea",
+      "Eh": "shorePath",
+      "Mh": "insideBenchArea",
+      "cp": "createRandom",
+      "h_": "buildMeadowTuft",
+      "kh": "benchApproach",
+      "m_": "buildCanopyInstance",
+      "th": "tuneMaterial",
+      "uf": "revisionUrlModifier"
+    },
+    "shrubs-01.js": {
+      "Ah": "distanceToPath",
+      "Bh": "hillNoise",
+      "Dh": "benchArea",
+      "Eh": "shorePath",
+      "Mh": "insideBenchArea",
+      "Y": "islandHeight",
+      "Zf": "smoothStep",
+      "cp": "createRandom",
+      "kh": "benchApproach",
+      "np": "shoreDistance",
+      "v_": "scatterShrubs",
+      "y_": "scatterFlowers"
+    },
+    "collision-01.js": {
+      "W_": "buildCollisionBoxes"
+    },
+    "world-assembly-01.js": {
+      "$g": "buildGroundCover",
+      "Dh": "benchArea",
+      "Fh": "scatterPebbles",
+      "Gh": "scatterMillRocks",
+      "Ih": "scatterTrees",
+      "Jh": "flattenTerrain",
+      "Lh": "scatterUndergrowth",
+      "Mg": "buildMillInterior",
+      "Og": "buildSluiceGate",
+      "Ph": "scatterRocks",
+      "Sh": "pathPlan",
+      "W_": "buildCollisionBoxes",
+      "f_": "buildDistantHills",
+      "h_": "buildMeadowTuft",
+      "jh": "onPath",
+      "kg": "buildSluiceWinch",
+      "rv": "assembleWorld",
+      "tp": "setDynamicObstacles",
+      "v_": "scatterShrubs",
+      "xh": "worldData",
+      "y_": "scatterFlowers",
+      "yh": "populateWorld"
+    },
+    "boat-hull-01.js": {
+      "Zf": "smoothStep",
+      "av": "hullProfile",
+      "cv": "hullSectionBase",
+      "dv": "hullSectionWidthDry",
+      "fv": "fixed8",
+      "lv": "hullSectionSheer",
+      "mv": "hullContactDistance",
+      "ov": "hullSegmentAt",
+      "pv": "hullWidthGlsl",
+      "sv": "hullWaterlineWidth",
+      "uv": "hullSectionWidth"
+    },
+    "water-surface-01.js": {
+      "Av": "buildPondWater",
+      "Cv": "updateWaveUniforms",
+      "J": "clampValue",
+      "Sv": "createWaveUniforms",
+      "Zf": "smoothStep",
+      "cp": "createRandom",
+      "kv": "buildWaterGeometry",
+      "mv": "hullContactDistance",
+      "pv": "hullWidthGlsl",
+      "uv": "hullSectionWidth"
+    },
+    "waterwheel-motion-01.js": {
+      "Jf": "millMachineryOrigins",
+      "Y": "islandHeight",
+      "Yh": "waterwheelSpec",
+      "Zf": "smoothStep",
+      "cp": "createRandom",
+      "ig": "ballisticPointAt",
+      "rg": "wheelSpillElement",
+      "xh": "worldData"
+    },
+    "pond-water-01.js": {
+      "J": "clampValue",
+      "Jv": "createSpringState",
+      "cp": "createRandom",
+      "dv": "hullSectionWidthDry",
+      "oy": "buildSplashSystem",
+      "sy": "buildWakeField"
+    },
+    "pond-water-02.js": {
+      "Af": "cloudSunlightGlsl",
+      "Av": "buildPondWater",
+      "Cv": "updateWaveUniforms",
+      "Gf": "rainShaderChunk",
+      "Qm": "waterlineEllipse",
+      "Rf": "breezeUniform",
+      "Sv": "createWaveUniforms",
+      "Zm": "buildTerrainSamples",
+      "ly": "buildPondSurface",
+      "sy": "buildWakeField",
+      "xh": "worldData"
+    },
+    "pond-water-03.js": {
+      "Xh": "wheelAngleAt",
+      "Yh": "waterwheelSpec",
+      "ag": "spillElementAt",
+      "cp": "createRandom",
+      "ig": "ballisticPointAt",
+      "ng": "paddleInWater",
+      "qf": "sluiceSpec",
+      "rg": "wheelSpillElement",
+      "uy": "buildMillSpill"
+    },
+    "pond-life-01.js": {
+      "J": "clampValue",
+      "Y": "islandHeight",
+      "Zf": "smoothStep",
+      "cp": "createRandom",
+      "rp": "insideIsland",
+      "xh": "worldData"
+    },
+    "fish-01.js": {
+      "Ay": "buildFishSchool",
+      "Dy": "buildFishAnimation",
+      "J": "clampValue",
+      "Ty": "fishKinematics",
+      "Y": "islandHeight",
+      "Zf": "smoothStep",
+      "oy": "buildSplashSystem"
+    },
+    "birds-01.js": {
+      "J": "clampValue",
+      "Y": "islandHeight"
+    },
+    "shores-01.js": {
+      "Ay": "buildFishSchool",
+      "Hy": "buildFallingLeaves",
+      "Iy": "buildReeds",
+      "Uy": "buildPondLife",
+      "Y": "islandHeight",
+      "cp": "createRandom",
+      "uy": "buildMillSpill",
+      "xf": "shaftLightField",
+      "xh": "worldData"
+    },
+    "mill-state-01.js": {
+      "X": "millLayout",
+      "Yh": "waterwheelSpec",
+      "eb": "createMillState"
+    },
+    "audio-01.js": {
+      "mb": "AudioEngine",
+      "uf": "revisionUrlModifier"
+    },
+    "mill-approach-01.js": {
+      "J": "clampValue",
+      "ap": "slideToWalkable"
+    },
+    "boat-control-01.js": {
+      "Qf": "shoreOutline",
+      "Sv": "createWaveUniforms",
+      "_b": "buildBoatRoute",
+      "vb": "attachHullWaves"
+    },
+    "boat-motion-01.js": {
+      "Ob": "createBoatState",
+      "vb": "attachHullWaves"
+    },
+    "keeper-turn-01.js": {
+      "ux": "mapSkeleton"
+    },
+    "keeper-model-01.js": {
+      "uf": "revisionUrlModifier"
+    },
+    "keeper-model-03.js": {
+      "kx": "cloneSkinnedGeometry"
+    },
+    "keeper-poses-01.js": {
+      "Fx": "fisherClimbSpec",
+      "J": "clampValue",
+      "Kx": "createFishingState",
+      "Vx": "keeperMotionSpec",
+      "rp": "insideIsland",
+      "zx": "fisherClimbAt"
+    },
+    "keeper-poses-02.js": {
+      "J": "clampValue",
+      "Vx": "keeperMotionSpec",
+      "aS": "buildMillKeeper",
+      "kx": "cloneSkinnedGeometry",
+      "rS": "buildKeeperRig",
+      "ux": "mapSkeleton",
+      "zx": "fisherClimbAt"
+    },
+    "keeper-walk-01.js": {
+      "J": "clampValue",
+      "Mh": "insideBenchArea",
+      "Nh": "interiorFloorHeight",
+      "dS": "createChairPath",
+      "ip": "walkableFacing",
+      "mS": "dockSpec",
+      "oS": "chairSpec",
+      "rp": "insideIsland"
+    },
+    "keeper-walk-02.js": {
+      "J": "clampValue",
+      "Kx": "createFishingState",
+      "Vx": "keeperMotionSpec",
+      "mS": "dockSpec",
+      "wS": "createPlayerState"
+    },
+    "fishing-01.js": {
+      "PS": "buildFishingLine",
+      "oS": "chairSpec",
+      "uf": "revisionUrlModifier"
+    },
+    "stove-01.js": {
+      "XS": "buildStoveFire"
+    },
+    "keeper-room-01.js": {
+      "Oh": "benchTop",
+      "QS": "buildKeeperRoom",
+      "XS": "buildStoveFire",
+      "ZS": "buildStove",
+      "eb": "createMillState",
+      "kh": "benchApproach"
+    },
+    "keeper-room-02.js": {
+      "Vx": "keeperMotionSpec",
+      "cp": "createRandom",
+      "nC": "buildClothingDrips",
+      "rC": "buildSwimLadder"
+    },
+    "boot-ui-01.js": {
+      "AC": "loading",
+      "Bf": "createBreezeState",
+      "CC": "boatState",
+      "Jv": "createSpringState",
+      "MC": "worldReady",
+      "Mf": "createCloudShadows",
+      "OC": "experienceStarted",
+      "Q": "playerState",
+      "Z": "byId",
+      "aC": "preferences",
+      "cC": "canvasEl",
+      "dC": "syncKeyboardHelp",
+      "dS": "createChairPath",
+      "fC": "cloudShadows",
+      "gC": "fishingState",
+      "hf": "createLoadingScreen",
+      "iC": "loadingScreen",
+      "jC": "balancedQuality",
+      "lC": "reducedMotion",
+      "mC": "queryParams",
+      "mS": "dockSpec",
+      "mb": "AudioEngine",
+      "oC": "panelIds",
+      "pC": "breezeState",
+      "pf": "loadPreferences",
+      "sC": "anyPanelOpen",
+      "uC": "coarsePointer",
+      "uf": "revisionUrlModifier",
+      "wS": "createPlayerState"
+    },
+    "renderer-01.js": {
+      "J": "clampValue",
+      "OC": "experienceStarted",
+      "Q": "playerState",
+      "Vp": "createRenderPipeline",
+      "Y": "islandHeight",
+      "Z": "byId",
+      "cC": "canvasEl",
+      "fC": "cloudShadows",
+      "gC": "fishingState",
+      "jC": "balancedQuality",
+      "lC": "reducedMotion",
+      "oS": "chairSpec"
+    },
+    "map-2d-01.js": {
+      "CC": "boatState",
+      "Dh": "benchArea",
+      "Eh": "shorePath",
+      "Q": "playerState",
+      "Y": "islandHeight",
+      "Z": "byId",
+      "mS": "dockSpec"
+    },
+    "experience-01.js": {
+      "AC": "loading",
+      "CC": "boatState",
+      "MC": "worldReady",
+      "OC": "experienceStarted",
+      "Q": "playerState",
+      "Z": "byId",
+      "_b": "buildBoatRoute",
+      "aC": "preferences",
+      "cC": "canvasEl",
+      "gC": "fishingState",
+      "lC": "reducedMotion",
+      "mS": "dockSpec",
+      "oC": "panelIds",
+      "sC": "anyPanelOpen",
+      "uC": "coarsePointer"
+    },
+    "input-01.js": {
+      "AC": "loading",
+      "CC": "boatState",
+      "Eh": "shorePath",
+      "J": "clampValue",
+      "OC": "experienceStarted",
+      "Q": "playerState",
+      "Z": "byId",
+      "aC": "preferences",
+      "cC": "canvasEl",
+      "gC": "fishingState",
+      "jC": "balancedQuality",
+      "mC": "queryParams",
+      "mf": "savePreferences",
+      "oC": "panelIds"
+    },
+    "inspector-01.js": {
+      "Eh": "shorePath",
+      "MC": "worldReady",
+      "Q": "playerState",
+      "Vx": "keeperMotionSpec",
+      "fC": "cloudShadows",
+      "gC": "fishingState",
+      "lC": "reducedMotion",
+      "mS": "dockSpec",
+      "oS": "chairSpec",
+      "pC": "breezeState"
+    },
+    "boot-01.js": {
+      "AC": "loading",
+      "CC": "boatState",
+      "MC": "worldReady",
+      "OC": "experienceStarted",
+      "Ob": "createBoatState",
+      "PS": "buildFishingLine",
+      "Q": "playerState",
+      "QS": "buildKeeperRoom",
+      "Uy": "buildPondLife",
+      "Z": "byId",
+      "aS": "buildMillKeeper",
+      "cC": "canvasEl",
+      "fC": "cloudShadows",
+      "fp": "setupLighting",
+      "gC": "fishingState",
+      "gE": "frameLoop",
+      "hE": "warmup",
+      "iC": "loadingScreen",
+      "ip": "walkableFacing",
+      "jC": "balancedQuality",
+      "lC": "reducedMotion",
+      "ly": "buildPondSurface",
+      "mC": "queryParams",
+      "mE": "bootGame",
+      "pC": "breezeState",
+      "rC": "buildSwimLadder",
+      "rv": "assembleWorld",
+      "sC": "anyPanelOpen",
+      "uC": "coarsePointer"
+    }
+  },
+  "scoped": {
+    "boot-utils-01.js": {
+      "a": [
+        [
+          43,
+          "revision"
+        ],
+        [
+          62,
+          "revision"
+        ],
+        [
+          75,
+          "revision"
+        ],
+        [
+          367,
+          "progressEl"
+        ],
+        [
+          404,
+          "progressEl"
+        ],
+        [
+          473,
+          "progressEl"
+        ],
+        [
+          495,
+          "progressEl"
+        ],
+        [
+          636,
+          "progressEl"
+        ]
+      ],
+      "e": [
+        [
+          3,
+          "url"
+        ],
+        [
+          16,
+          "url"
+        ],
+        [
+          20,
+          "url"
+        ],
+        [
+          28,
+          "url"
+        ],
+        [
+          83,
+          "url"
+        ],
+        [
+          89,
+          "url"
+        ],
+        [
+          106,
+          "url"
+        ],
+        [
+          149,
+          "url"
+        ],
+        [
+          158,
+          "url"
+        ],
+        [
+          172,
+          "prefs"
+        ],
+        [
+          179,
+          "prefs"
+        ],
+        [
+          204,
+          "prefs"
+        ],
+        [
+          222,
+          "prefs"
+        ],
+        [
+          232,
+          "prefs"
+        ],
+        [
+          248,
+          "storage"
+        ],
+        [
+          261,
+          "storage"
+        ],
+        [
+          297,
+          "prefs"
+        ],
+        [
+          324,
+          "prefs"
+        ],
+        [
+          337,
+          "doc"
+        ],
+        [
+          347,
+          "doc"
+        ],
+        [
+          358,
+          "doc"
+        ],
+        [
+          369,
+          "doc"
+        ],
+        [
+          380,
+          "doc"
+        ],
+        [
+          528,
+          "doc"
+        ]
+      ],
+      "i": [
+        [
+          33,
+          "origin"
+        ],
+        [
+          51,
+          "origin"
+        ],
+        [
+          356,
+          "detailEl"
+        ],
+        [
+          483,
+          "detailEl"
+        ],
+        [
+          627,
+          "detailEl"
+        ]
+      ],
+      "n": [
+        [
+          7,
+          "base"
+        ],
+        [
+          30,
+          "base"
+        ],
+        [
+          38,
+          "base"
+        ],
+        [
+          341,
+          "totalParts"
+        ],
+        [
+          408,
+          "totalParts"
+        ],
+        [
+          574,
+          "totalParts"
+        ]
+      ],
+      "r": [
+        [
+          23,
+          "parsed"
+        ],
+        [
+          45,
+          "parsed"
+        ],
+        [
+          56,
+          "parsed"
+        ],
+        [
+          65,
+          "parsed"
+        ],
+        [
+          78,
+          "parsed"
+        ],
+        [
+          345,
+          "messageEl"
+        ],
+        [
+          619,
+          "messageEl"
+        ]
+      ],
+      "t": [
+        [
+          5,
+          "assetRevisions"
+        ],
+        [
+          54,
+          "assetRevisions"
+        ],
+        [
+          299,
+          "storage"
+        ],
+        [
+          305,
+          "storage"
+        ],
+        [
+          339,
+          "loader"
+        ],
+        [
+          513,
+          "loader"
+        ],
+        [
+          521,
+          "loader"
+        ],
+        [
+          670,
+          "loader"
+        ],
+        [
+          674,
+          "loader"
+        ]
+      ]
+    },
+    "light-shafts-01.js": {
+      "a": [
+        [
+          367,
+          "applyState"
+        ],
+        [
+          449,
+          "applyState"
+        ],
+        [
+          496,
+          "applyState"
+        ],
+        [
+          539,
+          "applyState"
+        ]
+      ],
+      "e": [
+        [
+          3,
+          "x"
+        ],
+        [
+          26,
+          "x"
+        ],
+        [
+          323,
+          "reducedMotion"
+        ],
+        [
+          400,
+          "reducedMotion"
+        ],
+        [
+          474,
+          "reducedMotion"
+        ]
+      ],
+      "i": [
+        [
+          360,
+          "mode"
+        ],
+        [
+          392,
+          "mode"
+        ],
+        [
+          464,
+          "mode"
+        ],
+        [
+          525,
+          "mode"
+        ],
+        [
+          534,
+          "mode"
+        ]
+      ],
+      "n": [
+        [
+          7,
+          "y"
+        ],
+        [
+          48,
+          "y"
+        ],
+        [
+          349,
+          "patched"
+        ],
+        [
+          640,
+          "patched"
+        ],
+        [
+          649,
+          "patched"
+        ]
+      ],
+      "r": [
+        [
+          11,
+          "total"
+        ],
+        [
+          102,
+          "total"
+        ],
+        [
+          135,
+          "total"
+        ],
+        [
+          356,
+          "clock"
+        ],
+        [
+          396,
+          "clock"
+        ],
+        [
+          478,
+          "clock"
+        ],
+        [
+          481,
+          "clock"
+        ],
+        [
+          519,
+          "clock"
+        ]
+      ],
+      "t": [
+        [
+          5,
+          "z"
+        ],
+        [
+          37,
+          "z"
+        ],
+        [
+          334,
+          "uniforms"
+        ],
+        [
+          428,
+          "uniforms"
+        ],
+        [
+          456,
+          "uniforms"
+        ],
+        [
+          705,
+          "uniforms"
+        ]
+      ]
+    },
+    "island-01.js": {
+      "a": [
+        [
+          87,
+          "millPad"
+        ],
+        [
+          216,
+          "millPad"
+        ],
+        [
+          1170,
+          "walkableAt"
+        ],
+        [
+          1263,
+          "walkableAt"
+        ],
+        [
+          1298,
+          "walkableAt"
+        ],
+        [
+          1315,
+          "walkableAt"
+        ]
+      ],
+      "c": [
+        [
+          204,
+          "height"
+        ],
+        [
+          226,
+          "height"
+        ],
+        [
+          268,
+          "height"
+        ],
+        [
+          312,
+          "height"
+        ],
+        [
+          406,
+          "height"
+        ],
+        [
+          418,
+          "height"
+        ]
+      ],
+      "e": [
+        [
+          3,
+          "x"
+        ],
+        [
+          23,
+          "x"
+        ],
+        [
+          34,
+          "x"
+        ],
+        [
+          106,
+          "x"
+        ],
+        [
+          147,
+          "x"
+        ],
+        [
+          178,
+          "x"
+        ],
+        [
+          247,
+          "x"
+        ],
+        [
+          277,
+          "x"
+        ],
+        [
+          301,
+          "x"
+        ],
+        [
+          325,
+          "x"
+        ],
+        [
+          364,
+          "x"
+        ],
+        [
+          378,
+          "x"
+        ],
+        [
+          724,
+          "x"
+        ],
+        [
+          799,
+          "x"
+        ],
+        [
+          842,
+          "x"
+        ],
+        [
+          868,
+          "x"
+        ],
+        [
+          888,
+          "x"
+        ],
+        [
+          905,
+          "x"
+        ],
+        [
+          972,
+          "x"
+        ],
+        [
+          1005,
+          "x"
+        ],
+        [
+          1053,
+          "x"
+        ],
+        [
+          1078,
+          "x"
+        ],
+        [
+          1108,
+          "x"
+        ],
+        [
+          1118,
+          "x"
+        ],
+        [
+          1136,
+          "x"
+        ],
+        [
+          1158,
+          "x"
+        ],
+        [
+          1265,
+          "x"
+        ],
+        [
+          1276,
+          "x"
+        ],
+        [
+          1300,
+          "x"
+        ],
+        [
+          1309,
+          "x"
+        ],
+        [
+          1317,
+          "x"
+        ],
+        [
+          1338,
+          "x"
+        ]
+      ],
+      "i": [
+        [
+          71,
+          "plateau"
+        ],
+        [
+          210,
+          "plateau"
+        ],
+        [
+          1095,
+          "cosFacing"
+        ],
+        [
+          1126,
+          "cosFacing"
+        ],
+        [
+          1144,
+          "cosFacing"
+        ],
+        [
+          1166,
+          "facing"
+        ],
+        [
+          1184,
+          "facing"
+        ],
+        [
+          1193,
+          "facing"
+        ]
+      ],
+      "l": [
+        [
+          354,
+          "chute"
+        ],
+        [
+          411,
+          "chute"
+        ],
+        [
+          424,
+          "chute"
+        ]
+      ],
+      "n": [
+        [
+          9,
+          "bearing"
+        ],
+        [
+          53,
+          "bearing"
+        ],
+        [
+          66,
+          "bearing"
+        ],
+        [
+          730,
+          "best"
+        ],
+        [
+          830,
+          "best"
+        ],
+        [
+          836,
+          "best"
+        ],
+        [
+          862,
+          "best"
+        ],
+        [
+          872,
+          "margin"
+        ],
+        [
+          941,
+          "margin"
+        ],
+        [
+          948,
+          "margin"
+        ],
+        [
+          956,
+          "margin"
+        ],
+        [
+          963,
+          "margin"
+        ],
+        [
+          1016,
+          "margin"
+        ],
+        [
+          1034,
+          "margin"
+        ],
+        [
+          1070,
+          "margin"
+        ],
+        [
+          1082,
+          "facing"
+        ],
+        [
+          1092,
+          "facing"
+        ],
+        [
+          1101,
+          "facing"
+        ],
+        [
+          1162,
+          "dx"
+        ],
+        [
+          1220,
+          "dx"
+        ],
+        [
+          1253,
+          "dx"
+        ]
+      ],
+      "o": [
+        [
+          132,
+          "hollow"
+        ],
+        [
+          218,
+          "hollow"
+        ],
+        [
+          1204,
+          "steps"
+        ],
+        [
+          1243,
+          "steps"
+        ],
+        [
+          1255,
+          "steps"
+        ],
+        [
+          1261,
+          "steps"
+        ]
+      ],
+      "r": [
+        [
+          28,
+          "radius"
+        ],
+        [
+          82,
+          "radius"
+        ],
+        [
+          235,
+          "radius"
+        ],
+        [
+          876,
+          "bodyMargin"
+        ],
+        [
+          983,
+          "bodyMargin"
+        ],
+        [
+          1086,
+          "sinFacing"
+        ],
+        [
+          1120,
+          "sinFacing"
+        ],
+        [
+          1138,
+          "sinFacing"
+        ],
+        [
+          1164,
+          "dz"
+        ],
+        [
+          1222,
+          "dz"
+        ],
+        [
+          1259,
+          "dz"
+        ]
+      ],
+      "s": [
+        [
+          166,
+          "mound"
+        ],
+        [
+          221,
+          "mound"
+        ],
+        [
+          1229,
+          "bumped"
+        ],
+        [
+          1292,
+          "bumped"
+        ],
+        [
+          1346,
+          "bumped"
+        ]
+      ],
+      "t": [
+        [
+          5,
+          "z"
+        ],
+        [
+          16,
+          "z"
+        ],
+        [
+          39,
+          "z"
+        ],
+        [
+          119,
+          "z"
+        ],
+        [
+          155,
+          "z"
+        ],
+        [
+          192,
+          "z"
+        ],
+        [
+          251,
+          "z"
+        ],
+        [
+          260,
+          "z"
+        ],
+        [
+          281,
+          "z"
+        ],
+        [
+          290,
+          "z"
+        ],
+        [
+          305,
+          "z"
+        ],
+        [
+          339,
+          "z"
+        ],
+        [
+          389,
+          "z"
+        ],
+        [
+          401,
+          "z"
+        ],
+        [
+          726,
+          "z"
+        ],
+        [
+          807,
+          "z"
+        ],
+        [
+          850,
+          "z"
+        ],
+        [
+          870,
+          "z"
+        ],
+        [
+          897,
+          "z"
+        ],
+        [
+          915,
+          "z"
+        ],
+        [
+          976,
+          "z"
+        ],
+        [
+          1023,
+          "z"
+        ],
+        [
+          1059,
+          "z"
+        ],
+        [
+          1080,
+          "z"
+        ],
+        [
+          1110,
+          "z"
+        ],
+        [
+          1124,
+          "z"
+        ],
+        [
+          1142,
+          "z"
+        ],
+        [
+          1160,
+          "z"
+        ],
+        [
+          1269,
+          "z"
+        ],
+        [
+          1283,
+          "z"
+        ],
+        [
+          1304,
+          "z"
+        ],
+        [
+          1319,
+          "z"
+        ],
+        [
+          1326,
+          "z"
+        ],
+        [
+          1342,
+          "z"
+        ]
+      ]
+    },
+    "lights-01.js": {
+      "e": [
+        [
+          3,
+          "renderer"
+        ],
+        [
+          50,
+          "renderer"
+        ]
+      ],
+      "n": [
+        [
+          10,
+          "sun"
+        ],
+        [
+          98,
+          "sun"
+        ],
+        [
+          104,
+          "sun"
+        ],
+        [
+          212,
+          "sun"
+        ],
+        [
+          229,
+          "sun"
+        ]
+      ],
+      "o": [
+        [
+          26,
+          "reducedMotion"
+        ],
+        [
+          42,
+          "reducedMotion"
+        ]
+      ],
+      "t": [
+        [
+          5,
+          "scene"
+        ],
+        [
+          52,
+          "scene"
+        ],
+        [
+          78,
+          "scene"
+        ],
+        [
+          88,
+          "scene"
+        ],
+        [
+          126,
+          "scene"
+        ],
+        [
+          132,
+          "scene"
+        ],
+        [
+          144,
+          "scene"
+        ],
+        [
+          152,
+          "scene"
+        ],
+        [
+          278,
+          "scene"
+        ],
+        [
+          295,
+          "scene"
+        ],
+        [
+          318,
+          "scene"
+        ],
+        [
+          334,
+          "scene"
+        ]
+      ]
+    },
+    "terrain-01.js": {
+      "a": [
+        [
+          27,
+          "step"
+        ],
+        [
+          38,
+          "step"
+        ],
+        [
+          47,
+          "step"
+        ],
+        [
+          56,
+          "step"
+        ],
+        [
+          68,
+          "step"
+        ],
+        [
+          77,
+          "step"
+        ],
+        [
+          84,
+          "step"
+        ],
+        [
+          558,
+          "rz"
+        ],
+        [
+          585,
+          "rz"
+        ],
+        [
+          635,
+          "rz"
+        ]
+      ],
+      "e": [
+        [
+          3,
+          "x"
+        ],
+        [
+          22,
+          "x"
+        ],
+        [
+          36,
+          "x"
+        ],
+        [
+          45,
+          "x"
+        ],
+        [
+          64,
+          "x"
+        ],
+        [
+          73,
+          "x"
+        ],
+        [
+          164,
+          "x"
+        ],
+        [
+          314,
+          "flatteners"
+        ],
+        [
+          423,
+          "flatteners"
+        ],
+        [
+          445,
+          "box"
+        ],
+        [
+          450,
+          "box"
+        ],
+        [
+          460,
+          "box"
+        ],
+        [
+          476,
+          "box"
+        ],
+        [
+          482,
+          "box"
+        ],
+        [
+          494,
+          "box"
+        ],
+        [
+          500,
+          "box"
+        ],
+        [
+          541,
+          "box"
+        ],
+        [
+          547,
+          "box"
+        ],
+        [
+          561,
+          "box"
+        ],
+        [
+          567,
+          "box"
+        ],
+        [
+          596,
+          "box"
+        ],
+        [
+          602,
+          "box"
+        ],
+        [
+          614,
+          "box"
+        ],
+        [
+          620,
+          "box"
+        ]
+      ],
+      "i": [
+        [
+          18,
+          "height"
+        ],
+        [
+          105,
+          "height"
+        ],
+        [
+          301,
+          "height"
+        ],
+        [
+          538,
+          "rx"
+        ],
+        [
+          583,
+          "rx"
+        ],
+        [
+          631,
+          "rx"
+        ]
+      ],
+      "n": [
+        [
+          7,
+          "flatteners"
+        ],
+        [
+          157,
+          "flatteners"
+        ],
+        [
+          323,
+          "extent"
+        ],
+        [
+          391,
+          "extent"
+        ],
+        [
+          411,
+          "extent"
+        ],
+        [
+          491,
+          "halfY"
+        ],
+        [
+          530,
+          "halfY"
+        ]
+      ],
+      "o": [
+        [
+          31,
+          "slopeX"
+        ],
+        [
+          93,
+          "slopeX"
+        ],
+        [
+          131,
+          "slopeX"
+        ]
+      ],
+      "r": [
+        [
+          12,
+          "heightAt"
+        ],
+        [
+          20,
+          "heightAt"
+        ],
+        [
+          34,
+          "heightAt"
+        ],
+        [
+          43,
+          "heightAt"
+        ],
+        [
+          62,
+          "heightAt"
+        ],
+        [
+          71,
+          "heightAt"
+        ],
+        [
+          329,
+          "data"
+        ],
+        [
+          413,
+          "data"
+        ],
+        [
+          439,
+          "data"
+        ],
+        [
+          509,
+          "shrink"
+        ],
+        [
+          556,
+          "shrink"
+        ],
+        [
+          576,
+          "shrink"
+        ]
+      ],
+      "s": [
+        [
+          59,
+          "slopeZ"
+        ],
+        [
+          95,
+          "slopeZ"
+        ],
+        [
+          146,
+          "slopeZ"
+        ]
+      ],
+      "t": [
+        [
+          5,
+          "z"
+        ],
+        [
+          24,
+          "z"
+        ],
+        [
+          40,
+          "z"
+        ],
+        [
+          49,
+          "z"
+        ],
+        [
+          66,
+          "z"
+        ],
+        [
+          75,
+          "z"
+        ],
+        [
+          178,
+          "z"
+        ],
+        [
+          319,
+          "size"
+        ],
+        [
+          334,
+          "size"
+        ],
+        [
+          336,
+          "size"
+        ],
+        [
+          350,
+          "size"
+        ],
+        [
+          365,
+          "size"
+        ],
+        [
+          380,
+          "size"
+        ],
+        [
+          400,
+          "size"
+        ],
+        [
+          429,
+          "size"
+        ],
+        [
+          473,
+          "midY"
+        ],
+        [
+          527,
+          "midY"
+        ]
+      ]
+    },
+    "material-tuning-01.js": {
+      "e": [
+        [
+          3,
+          "material"
+        ],
+        [
+          13,
+          "material"
+        ],
+        [
+          23,
+          "material"
+        ],
+        [
+          37,
+          "material"
+        ],
+        [
+          47,
+          "material"
+        ],
+        [
+          58,
+          "material"
+        ],
+        [
+          79,
+          "material"
+        ],
+        [
+          92,
+          "material"
+        ],
+        [
+          100,
+          "material"
+        ],
+        [
+          107,
+          "material"
+        ],
+        [
+          120,
+          "material"
+        ],
+        [
+          133,
+          "material"
+        ],
+        [
+          167,
+          "material"
+        ],
+        [
+          189,
+          "material"
+        ],
+        [
+          201,
+          "material"
+        ],
+        [
+          212,
+          "material"
+        ],
+        [
+          347,
+          "material"
+        ],
+        [
+          376,
+          "material"
+        ],
+        [
+          388,
+          "material"
+        ],
+        [
+          414,
+          "material"
+        ],
+        [
+          422,
+          "material"
+        ],
+        [
+          430,
+          "material"
+        ],
+        [
+          439,
+          "material"
+        ],
+        [
+          450,
+          "material"
+        ],
+        [
+          463,
+          "material"
+        ],
+        [
+          472,
+          "material"
+        ],
+        [
+          484,
+          "material"
+        ],
+        [
+          492,
+          "material"
+        ],
+        [
+          505,
+          "material"
+        ],
+        [
+          515,
+          "material"
+        ],
+        [
+          545,
+          "material"
+        ],
+        [
+          557,
+          "material"
+        ],
+        [
+          565,
+          "material"
+        ],
+        [
+          574,
+          "material"
+        ],
+        [
+          680,
+          "material"
+        ],
+        [
+          829,
+          "material"
+        ],
+        [
+          846,
+          "material"
+        ]
+      ],
+      "t": [
+        [
+          7,
+          "isTimber"
+        ],
+        [
+          20,
+          "isTimber"
+        ],
+        [
+          34,
+          "isTimber"
+        ],
+        [
+          207,
+          "isTimber"
+        ]
+      ]
+    },
+    "waterwheel-kinematics-01.js": {
+      "a": [
+        [
+          234,
+          "speed"
+        ],
+        [
+          312,
+          "speed"
+        ],
+        [
+          323,
+          "speed"
+        ],
+        [
+          555,
+          "flow"
+        ],
+        [
+          585,
+          "flow"
+        ],
+        [
+          627,
+          "flow"
+        ]
+      ],
+      "c": [
+        [
+          267,
+          "rimRadius"
+        ],
+        [
+          290,
+          "rimRadius"
+        ],
+        [
+          298,
+          "rimRadius"
+        ],
+        [
+          310,
+          "rimRadius"
+        ],
+        [
+          321,
+          "rimRadius"
+        ]
+      ],
+      "e": [
+        [
+          34,
+          "time"
+        ],
+        [
+          49,
+          "time"
+        ],
+        [
+          52,
+          "time"
+        ],
+        [
+          70,
+          "time"
+        ],
+        [
+          83,
+          "time"
+        ],
+        [
+          166,
+          "time"
+        ],
+        [
+          180,
+          "time"
+        ],
+        [
+          209,
+          "time"
+        ],
+        [
+          227,
+          "time"
+        ],
+        [
+          242,
+          "time"
+        ],
+        [
+          421,
+          "time"
+        ],
+        [
+          437,
+          "element"
+        ],
+        [
+          446,
+          "element"
+        ],
+        [
+          453,
+          "element"
+        ],
+        [
+          464,
+          "element"
+        ],
+        [
+          471,
+          "element"
+        ],
+        [
+          488,
+          "element"
+        ],
+        [
+          495,
+          "element"
+        ],
+        [
+          506,
+          "element"
+        ],
+        [
+          515,
+          "element"
+        ],
+        [
+          528,
+          "element"
+        ],
+        [
+          541,
+          "time"
+        ],
+        [
+          570,
+          "time"
+        ],
+        [
+          608,
+          "time"
+        ]
+      ],
+      "i": [
+        [
+          223,
+          "phase"
+        ],
+        [
+          255,
+          "phase"
+        ],
+        [
+          264,
+          "phase"
+        ],
+        [
+          398,
+          "phase"
+        ],
+        [
+          410,
+          "phase"
+        ],
+        [
+          429,
+          "phase"
+        ],
+        [
+          549,
+          "machine"
+        ],
+        [
+          576,
+          "machine"
+        ],
+        [
+          616,
+          "machine"
+        ]
+      ],
+      "l": [
+        [
+          275,
+          "origin"
+        ],
+        [
+          332,
+          "origin"
+        ],
+        [
+          373,
+          "origin"
+        ]
+      ],
+      "n": [
+        [
+          74,
+          "machine"
+        ],
+        [
+          85,
+          "machine"
+        ],
+        [
+          170,
+          "machine"
+        ],
+        [
+          184,
+          "machine"
+        ],
+        [
+          213,
+          "lateral"
+        ],
+        [
+          282,
+          "lateral"
+        ],
+        [
+          545,
+          "lateral"
+        ],
+        [
+          574,
+          "lateral"
+        ],
+        [
+          614,
+          "lateral"
+        ]
+      ],
+      "o": [
+        [
+          249,
+          "sinPhase"
+        ],
+        [
+          296,
+          "sinPhase"
+        ],
+        [
+          307,
+          "sinPhase"
+        ],
+        [
+          566,
+          "element"
+        ],
+        [
+          581,
+          "element"
+        ],
+        [
+          604,
+          "element"
+        ],
+        [
+          623,
+          "element"
+        ],
+        [
+          638,
+          "element"
+        ],
+        [
+          645,
+          "element"
+        ]
+      ],
+      "r": [
+        [
+          176,
+          "phase"
+        ],
+        [
+          188,
+          "phase"
+        ],
+        [
+          194,
+          "phase"
+        ],
+        [
+          217,
+          "machine"
+        ],
+        [
+          231,
+          "machine"
+        ],
+        [
+          236,
+          "machine"
+        ],
+        [
+          238,
+          "machine"
+        ],
+        [
+          415,
+          "machine"
+        ],
+        [
+          417,
+          "machine"
+        ],
+        [
+          547,
+          "gateFlow"
+        ],
+        [
+          559,
+          "gateFlow"
+        ]
+      ],
+      "s": [
+        [
+          258,
+          "cosPhase"
+        ],
+        [
+          288,
+          "cosPhase"
+        ],
+        [
+          319,
+          "cosPhase"
+        ],
+        [
+          579,
+          "age"
+        ],
+        [
+          610,
+          "age"
+        ],
+        [
+          621,
+          "age"
+        ],
+        [
+          640,
+          "age"
+        ],
+        [
+          651,
+          "age"
+        ]
+      ],
+      "t": [
+        [
+          36,
+          "machine"
+        ],
+        [
+          43,
+          "machine"
+        ],
+        [
+          45,
+          "machine"
+        ],
+        [
+          72,
+          "paddle"
+        ],
+        [
+          89,
+          "paddle"
+        ],
+        [
+          168,
+          "paddle"
+        ],
+        [
+          182,
+          "paddle"
+        ],
+        [
+          211,
+          "paddle"
+        ],
+        [
+          229,
+          "paddle"
+        ],
+        [
+          439,
+          "age"
+        ],
+        [
+          460,
+          "age"
+        ],
+        [
+          478,
+          "age"
+        ],
+        [
+          482,
+          "age"
+        ],
+        [
+          484,
+          "age"
+        ],
+        [
+          502,
+          "age"
+        ],
+        [
+          524,
+          "age"
+        ],
+        [
+          543,
+          "paddle"
+        ],
+        [
+          572,
+          "paddle"
+        ],
+        [
+          612,
+          "paddle"
+        ]
+      ],
+      "u": [
+        [
+          301,
+          "velocity"
+        ],
+        [
+          336,
+          "velocity"
+        ],
+        [
+          347,
+          "velocity"
+        ],
+        [
+          362,
+          "velocity"
+        ]
+      ]
+    },
+    "boat-hull-01.js": {
+      "a": [
+        [
+          88,
+          "x1"
+        ],
+        [
+          226,
+          "x1"
+        ],
+        [
+          241,
+          "x1"
+        ],
+        [
+          251,
+          "x1"
+        ],
+        [
+          794,
+          "lo"
+        ],
+        [
+          842,
+          "lo"
+        ],
+        [
+          851,
+          "lo"
+        ]
+      ],
+      "c": [
+        [
+          174,
+          "slopeOut"
+        ],
+        [
+          248,
+          "slopeOut"
+        ],
+        [
+          830,
+          "slope"
+        ],
+        [
+          862,
+          "slope"
+        ],
+        [
+          963,
+          "slope"
+        ]
+      ],
+      "d": [
+        [
+          880,
+          "beyond"
+        ],
+        [
+          912,
+          "beyond"
+        ],
+        [
+          928,
+          "beyond"
+        ],
+        [
+          939,
+          "beyond"
+        ],
+        [
+          961,
+          "beyond"
+        ]
+      ],
+      "e": [
+        [
+          60,
+          "segment"
+        ],
+        [
+          84,
+          "segment"
+        ],
+        [
+          95,
+          "segment"
+        ],
+        [
+          109,
+          "segment"
+        ],
+        [
+          126,
+          "segment"
+        ],
+        [
+          145,
+          "segment"
+        ],
+        [
+          162,
+          "segment"
+        ],
+        [
+          183,
+          "segment"
+        ],
+        [
+          204,
+          "segment"
+        ],
+        [
+          261,
+          "along"
+        ],
+        [
+          293,
+          "along"
+        ],
+        [
+          338,
+          "along"
+        ],
+        [
+          446,
+          "along"
+        ],
+        [
+          459,
+          "along"
+        ],
+        [
+          476,
+          "along"
+        ],
+        [
+          487,
+          "along"
+        ],
+        [
+          500,
+          "along"
+        ],
+        [
+          517,
+          "along"
+        ],
+        [
+          528,
+          "along"
+        ],
+        [
+          539,
+          "along"
+        ],
+        [
+          559,
+          "along"
+        ],
+        [
+          566,
+          "along"
+        ],
+        [
+          571,
+          "along"
+        ],
+        [
+          589,
+          "along"
+        ],
+        [
+          605,
+          "along"
+        ],
+        [
+          618,
+          "value"
+        ],
+        [
+          622,
+          "value"
+        ],
+        [
+          762,
+          "x"
+        ],
+        [
+          872,
+          "x"
+        ],
+        [
+          942,
+          "x"
+        ]
+      ],
+      "i": [
+        [
+          79,
+          "y0"
+        ],
+        [
+          194,
+          "y0"
+        ],
+        [
+          230,
+          "y0"
+        ],
+        [
+          775,
+          "clamped"
+        ],
+        [
+          803,
+          "clamped"
+        ],
+        [
+          816,
+          "clamped"
+        ],
+        [
+          825,
+          "clamped"
+        ]
+      ],
+      "l": [
+        [
+          854,
+          "norm"
+        ],
+        [
+          878,
+          "norm"
+        ],
+        [
+          952,
+          "norm"
+        ],
+        [
+          965,
+          "norm"
+        ]
+      ],
+      "n": [
+        [
+          68,
+          "last"
+        ],
+        [
+          113,
+          "last"
+        ],
+        [
+          149,
+          "last"
+        ],
+        [
+          187,
+          "last"
+        ],
+        [
+          208,
+          "last"
+        ],
+        [
+          306,
+          "segment"
+        ],
+        [
+          340,
+          "segment"
+        ],
+        [
+          346,
+          "segment"
+        ],
+        [
+          350,
+          "segment"
+        ],
+        [
+          381,
+          "segment"
+        ],
+        [
+          400,
+          "segment"
+        ],
+        [
+          420,
+          "segment"
+        ],
+        [
+          435,
+          "segment"
+        ],
+        [
+          766,
+          "along"
+        ],
+        [
+          773,
+          "along"
+        ],
+        [
+          967,
+          "along"
+        ]
+      ],
+      "o": [
+        [
+          90,
+          "y1"
+        ],
+        [
+          234,
+          "y1"
+        ],
+        [
+          808,
+          "hi"
+        ],
+        [
+          835,
+          "hi"
+        ],
+        [
+          849,
+          "hi"
+        ]
+      ],
+      "r": [
+        [
+          77,
+          "x0"
+        ],
+        [
+          215,
+          "x0"
+        ],
+        [
+          222,
+          "x0"
+        ],
+        [
+          243,
+          "x0"
+        ],
+        [
+          253,
+          "x0"
+        ],
+        [
+          323,
+          "u01"
+        ],
+        [
+          367,
+          "u01"
+        ],
+        [
+          374,
+          "u01"
+        ],
+        [
+          376,
+          "u01"
+        ],
+        [
+          386,
+          "u01"
+        ],
+        [
+          393,
+          "u01"
+        ],
+        [
+          395,
+          "u01"
+        ],
+        [
+          397,
+          "u01"
+        ],
+        [
+          408,
+          "u01"
+        ],
+        [
+          415,
+          "u01"
+        ],
+        [
+          417,
+          "u01"
+        ],
+        [
+          425,
+          "u01"
+        ],
+        [
+          430,
+          "u01"
+        ],
+        [
+          432,
+          "u01"
+        ],
+        [
+          770,
+          "alongNeg"
+        ],
+        [
+          790,
+          "alongNeg"
+        ],
+        [
+          886,
+          "alongNeg"
+        ]
+      ],
+      "s": [
+        [
+          100,
+          "slopeIn"
+        ],
+        [
+          238,
+          "slopeIn"
+        ],
+        [
+          821,
+          "halfWidth"
+        ],
+        [
+          875,
+          "halfWidth"
+        ]
+      ],
+      "t": [
+        [
+          64,
+          "profile"
+        ],
+        [
+          70,
+          "profile"
+        ],
+        [
+          82,
+          "profile"
+        ],
+        [
+          93,
+          "profile"
+        ],
+        [
+          103,
+          "profile"
+        ],
+        [
+          120,
+          "profile"
+        ],
+        [
+          139,
+          "profile"
+        ],
+        [
+          156,
+          "profile"
+        ],
+        [
+          177,
+          "profile"
+        ],
+        [
+          198,
+          "profile"
+        ],
+        [
+          265,
+          "segIndex"
+        ],
+        [
+          310,
+          "segIndex"
+        ],
+        [
+          320,
+          "segIndex"
+        ],
+        [
+          530,
+          "height"
+        ],
+        [
+          555,
+          "height"
+        ],
+        [
+          591,
+          "height"
+        ],
+        [
+          607,
+          "height"
+        ],
+        [
+          764,
+          "height"
+        ],
+        [
+          827,
+          "height"
+        ],
+        [
+          837,
+          "height"
+        ],
+        [
+          844,
+          "height"
+        ]
+      ],
+      "u": [
+        [
+          865,
+          "across"
+        ],
+        [
+          903,
+          "across"
+        ],
+        [
+          926,
+          "across"
+        ],
+        [
+          936,
+          "across"
+        ],
+        [
+          958,
+          "across"
+        ]
+      ]
+    }
+  },
+  "summary": {
+    "boot-utils-01.js": {
+      "names": 20,
+      "splices": 100,
+      "flat": 14,
+      "indexed": 59
+    },
+    "light-shafts-01.js": {
+      "names": 10,
+      "splices": 40,
+      "flat": 4,
+      "indexed": 33
+    },
+    "weather-01.js": {
+      "names": 10,
+      "splices": 13,
+      "flat": 10,
+      "indexed": 0
+    },
+    "island-01.js": {
+      "names": 23,
+      "splices": 166,
+      "flat": 13,
+      "indexed": 132
+    },
+    "landmarks-01.js": {
+      "names": 1,
+      "splices": 2,
+      "flat": 1,
+      "indexed": 0
+    },
+    "world-utils-01.js": {
+      "names": 4,
+      "splices": 6,
+      "flat": 4,
+      "indexed": 0
+    },
+    "lights-01.js": {
+      "names": 19,
+      "splices": 65,
+      "flat": 15,
+      "indexed": 21
+    },
+    "render-pipeline-01.js": {
+      "names": 3,
+      "splices": 4,
+      "flat": 3,
+      "indexed": 0
+    },
+    "terrain-01.js": {
+      "names": 17,
+      "splices": 104,
+      "flat": 9,
+      "indexed": 82
+    },
+    "material-tuning-01.js": {
+      "names": 6,
+      "splices": 53,
+      "flat": 4,
+      "indexed": 41
+    },
+    "canopy-01.js": {
+      "names": 3,
+      "splices": 3,
+      "flat": 3,
+      "indexed": 0
+    },
+    "placement-01.js": {
+      "names": 2,
+      "splices": 10,
+      "flat": 2,
+      "indexed": 0
+    },
+    "world-data-01.js": {
+      "names": 8,
+      "splices": 23,
+      "flat": 8,
+      "indexed": 0
+    },
+    "paths-01.js": {
+      "names": 9,
+      "splices": 23,
+      "flat": 9,
+      "indexed": 0
+    },
+    "scatter-01.js": {
+      "names": 12,
+      "splices": 44,
+      "flat": 12,
+      "indexed": 0
+    },
+    "terrain-dressing-01.js": {
+      "names": 18,
+      "splices": 46,
+      "flat": 18,
+      "indexed": 0
+    },
+    "waterwheel-kinematics-01.js": {
+      "names": 24,
+      "splices": 148,
+      "flat": 13,
+      "indexed": 107
+    },
+    "sluice-state-01.js": {
+      "names": 2,
+      "splices": 11,
+      "flat": 2,
+      "indexed": 0
+    },
+    "sluice-gate-01.js": {
+      "names": 3,
+      "splices": 3,
+      "flat": 3,
+      "indexed": 0
+    },
+    "mill-interior-01.js": {
+      "names": 5,
+      "splices": 13,
+      "flat": 5,
+      "indexed": 0
+    },
+    "mill-interior-02.js": {
+      "names": 1,
+      "splices": 2,
+      "flat": 1,
+      "indexed": 0
+    },
+    "waterwheel-build-01.js": {
+      "names": 2,
+      "splices": 4,
+      "flat": 2,
+      "indexed": 0
+    },
+    "ground-cover-01.js": {
+      "names": 1,
+      "splices": 1,
+      "flat": 1,
+      "indexed": 0
+    },
+    "trees-01.js": {
+      "names": 3,
+      "splices": 7,
+      "flat": 3,
+      "indexed": 0
+    },
+    "forest-01.js": {
+      "names": 5,
+      "splices": 16,
+      "flat": 5,
+      "indexed": 0
+    },
+    "grass-meadow-01.js": {
+      "names": 10,
+      "splices": 12,
+      "flat": 10,
+      "indexed": 0
+    },
+    "shrubs-01.js": {
+      "names": 12,
+      "splices": 27,
+      "flat": 12,
+      "indexed": 0
+    },
+    "view-mode-01.js": {
+      "names": 0,
+      "splices": 0,
+      "flat": 0,
+      "indexed": 0
+    },
+    "collision-01.js": {
+      "names": 1,
+      "splices": 1,
+      "flat": 1,
+      "indexed": 0
+    },
+    "world-assembly-01.js": {
+      "names": 22,
+      "splices": 49,
+      "flat": 22,
+      "indexed": 0
+    },
+    "boat-hull-01.js": {
+      "names": 23,
+      "splices": 166,
+      "flat": 11,
+      "indexed": 131
+    },
+    "water-surface-01.js": {
+      "names": 10,
+      "splices": 15,
+      "flat": 10,
+      "indexed": 0
+    },
+    "waterwheel-motion-01.js": {
+      "names": 8,
+      "splices": 38,
+      "flat": 8,
+      "indexed": 0
+    },
+    "pond-water-01.js": {
+      "names": 6,
+      "splices": 10,
+      "flat": 6,
+      "indexed": 0
+    },
+    "pond-water-02.js": {
+      "names": 11,
+      "splices": 12,
+      "flat": 11,
+      "indexed": 0
+    },
+    "pond-water-03.js": {
+      "names": 9,
+      "splices": 19,
+      "flat": 9,
+      "indexed": 0
+    },
+    "pond-life-01.js": {
+      "names": 6,
+      "splices": 11,
+      "flat": 6,
+      "indexed": 0
+    },
+    "fish-01.js": {
+      "names": 7,
+      "splices": 24,
+      "flat": 7,
+      "indexed": 0
+    },
+    "birds-01.js": {
+      "names": 2,
+      "splices": 3,
+      "flat": 2,
+      "indexed": 0
+    },
+    "shores-01.js": {
+      "names": 9,
+      "splices": 17,
+      "flat": 9,
+      "indexed": 0
+    },
+    "mill-state-01.js": {
+      "names": 3,
+      "splices": 63,
+      "flat": 3,
+      "indexed": 0
+    },
+    "audio-01.js": {
+      "names": 2,
+      "splices": 2,
+      "flat": 2,
+      "indexed": 0
+    },
+    "mill-approach-01.js": {
+      "names": 2,
+      "splices": 3,
+      "flat": 2,
+      "indexed": 0
+    },
+    "boat-control-01.js": {
+      "names": 4,
+      "splices": 4,
+      "flat": 4,
+      "indexed": 0
+    },
+    "boat-motion-01.js": {
+      "names": 2,
+      "splices": 2,
+      "flat": 2,
+      "indexed": 0
+    },
+    "sky-build-01.js": {
+      "names": 0,
+      "splices": 0,
+      "flat": 0,
+      "indexed": 0
+    },
+    "keeper-turn-01.js": {
+      "names": 1,
+      "splices": 1,
+      "flat": 1,
+      "indexed": 0
+    },
+    "keeper-model-01.js": {
+      "names": 1,
+      "splices": 1,
+      "flat": 1,
+      "indexed": 0
+    },
+    "keeper-model-02.js": {
+      "names": 0,
+      "splices": 0,
+      "flat": 0,
+      "indexed": 0
+    },
+    "keeper-model-03.js": {
+      "names": 1,
+      "splices": 1,
+      "flat": 1,
+      "indexed": 0
+    },
+    "keeper-poses-01.js": {
+      "names": 6,
+      "splices": 46,
+      "flat": 6,
+      "indexed": 0
+    },
+    "keeper-poses-02.js": {
+      "names": 7,
+      "splices": 20,
+      "flat": 7,
+      "indexed": 0
+    },
+    "keeper-walk-01.js": {
+      "names": 8,
+      "splices": 42,
+      "flat": 8,
+      "indexed": 0
+    },
+    "keeper-walk-02.js": {
+      "names": 5,
+      "splices": 17,
+      "flat": 5,
+      "indexed": 0
+    },
+    "fishing-01.js": {
+      "names": 3,
+      "splices": 6,
+      "flat": 3,
+      "indexed": 0
+    },
+    "fishing-02.js": {
+      "names": 0,
+      "splices": 0,
+      "flat": 0,
+      "indexed": 0
+    },
+    "stove-01.js": {
+      "names": 1,
+      "splices": 1,
+      "flat": 1,
+      "indexed": 0
+    },
+    "keeper-room-01.js": {
+      "names": 6,
+      "splices": 10,
+      "flat": 6,
+      "indexed": 0
+    },
+    "keeper-room-02.js": {
+      "names": 4,
+      "splices": 9,
+      "flat": 4,
+      "indexed": 0
+    },
+    "boot-ui-01.js": {
+      "names": 29,
+      "splices": 49,
+      "flat": 29,
+      "indexed": 0
+    },
+    "renderer-01.js": {
+      "names": 12,
+      "splices": 42,
+      "flat": 12,
+      "indexed": 0
+    },
+    "map-2d-01.js": {
+      "names": 7,
+      "splices": 10,
+      "flat": 7,
+      "indexed": 0
+    },
+    "experience-01.js": {
+      "names": 15,
+      "splices": 191,
+      "flat": 15,
+      "indexed": 0
+    },
+    "input-01.js": {
+      "names": 14,
+      "splices": 120,
+      "flat": 14,
+      "indexed": 0
+    },
+    "inspector-01.js": {
+      "names": 10,
+      "splices": 49,
+      "flat": 10,
+      "indexed": 0
+    },
+    "inspector-02.js": {
+      "names": 0,
+      "splices": 0,
+      "flat": 0,
+      "indexed": 0
+    },
+    "boot-01.js": {
+      "names": 29,
+      "splices": 173,
+      "flat": 29,
+      "indexed": 0
+    },
+    "recovery-handler-01.js": {
+      "names": 0,
+      "splices": 0,
+      "flat": 0,
+      "indexed": 0
+    }
+  }
+}

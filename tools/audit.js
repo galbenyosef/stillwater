@@ -6,29 +6,35 @@
 // to resolve, so the gate's main work is provenance). The gate also keeps
 // split-spec.json honest, re-runs the standalone parse check over every
 // slice/pretty, verifies byte-exact round-trips and tiling, validates inline
-// <script>/<style> twins against their capture byte ranges, and re-renders every
-// pretty under the pinned prettier as a best-effort proof the recorded method is
+// <script>/<style> twins against their capture byte ranges, re-checks the
+// reviewed rename layer against its recorded maps, and re-renders every pretty
+// under the pinned prettier as a best-effort proof the recorded method is
 // reproducible.
 //
-// This mirror's shape (adapted from the fleet template, 2026-10-13):
+// This mirror's shape (structure pass 2026-10-14):
 //
 //   ROOT = "" — the capture sits at the repo root (origin root deploy).
 //   readable/ — the app bundle (assets/index-BogB70q-.js), the stylesheet, the
 //               Cloudflare challenge script and the two inline index.html blocks
 //               as prettier 3.9.6 twins (single pass, idempotence asserted at
 //               derive time; the gate re-renders to the same fixed point).
-//   src/     — 77 statement-aligned slices of the app bundle's app-code runs
-//               (the vendor regions are wholeFile) plus the inline recovery
-//               handler. Every slice round-trips byte-exact to its readable
-//               range and parses with `node --input-type=module --check -`.
-//   wholeFile— 4 vendor regions inside the bundle (Vite modulepreload polyfill,
-//               three.js r186 core, GLTFLoader + KHR_* plugins, MeshoptDecoder
-//               with its embedded wasm), the Cloudflare challenge script, the
-//               stylesheet, the inline recovery head comment and the inline
-//               Cloudflare injection — indexed, never sliced, guarded below.
+//   src/     — 68 statement-aligned slices of the app bundle's app code, cut
+//               ONLY inside one reviewed semantic cluster (src/<cluster>-NN.js,
+//               the cluster map asserted at derive time and recorded per
+//               section in split-spec.json) plus the inline recovery handler.
+//               Every slice round-trips byte-exact to its readable range and
+//               parses with `node --input-type=module --check -`.
+//   wholeFile— 12 vendor module regions inside the bundle (Vite modulepreload
+//               polyfill, three.js r186 core, HDRLoader, the examples
+//               postprocessing stack, BufferGeometryUtils, SkeletonUtils,
+//               GLTFLoader + parser, MeshoptDecoder, OrbitControls, Reflector,
+//               Sky, RoundedBoxGeometry), the Cloudflare challenge script, the
+//               stylesheet, the inline recovery-handler head comment and the
+//               inline Cloudflare injection — indexed, never sliced, guarded.
 //
 // The mirror's tools/derive.mjs is the writer of readable/ + src/ +
-// split-spec.json; audit.js only reads and gates them.
+// split-spec.json; tools/apply-names.mjs applies the reviewed rename layer
+// (tools/names.json -> rename-map.json); audit.js only reads and gates them.
 //
 // Rules this gate enforces (keep them; weaken none without recording why in the
 // mirror's README — PLAN §0: diverge deliberately, never silently):
@@ -44,13 +50,18 @@
 //   3. The ranges of each sourceFile tile it exactly: first starts at line 1,
 //      each next starts at previous end + 1, last ends at EOF — no gaps.
 //   4. Byte-exact round-trip: every src slice minus its exact 2-line header
-//      (`// <tag> NN — <marker>` + `// Lines A-B of <pretty> (statement-aligned).`)
-//      equals its recorded sourceFile range byte for byte.
+//      (`// <file> — <content>` + `// Lines A-B of <pretty> (cluster <slug>,
+//      statement-aligned).`) equals its recorded sourceFile range byte for byte;
+//      the header is re-verified against the section's own recorded `content`
+//      and `cluster`, so a renamed header cannot drift from the spec.
 //   5. Every slice parses standalone with the exact gate command
 //      `node --input-type=module --check -` (stdin), as does every readable
 //      *.pretty.js.
 //   6. src/*.js on disk and the spec's ranged slices are the same set; the spec
 //      may additionally list wholeFile / skipped sections that are NOT on disk.
+//      Every ranged slice must carry `cluster` + `content` (the reviewed
+//      reading of its window), and no two ranges may leave a gap UNLESS the
+//      gap belongs to a wholeFile region (checked by rule 3's tiling).
 //   7. Every readable pretty is referenced by the spec, its capture source
 //      exists, is recorded in .upstream/manifest.json, and is NOT byte-identical
 //      to the pretty (prettier did run). Inline-block twins are exempt from the
@@ -342,8 +353,23 @@ for (const [sourceFile, list] of bySource) {
 }
 
 // ── byte-exact round-trip + header provenance ───────────────────────────
+// A slice with rename records is checked against its range THROUGH the
+// recorded map in the async rename-layer gate below (applyRecords(range, …)
+// must reproduce the body byte-exactly); an unrenamed slice must equal its
+// range byte-for-byte right here.
+const renameMapPath = path.join(proj, "rename-map.json");
+let renameRecords = { files: {}, scoped: {} };
+if (fs.existsSync(renameMapPath)) {
+  try {
+    const r = JSON.parse(fs.readFileSync(renameMapPath, "utf8"));
+    renameRecords = { files: r.files ?? {}, scoped: r.scoped ?? {} };
+  } catch {
+    /* reported in the async gate */
+  }
+}
 let roundOK = 0,
-  ranged = 0;
+  ranged = 0,
+  renamedSlices = 0;
 for (const [, list] of bySource) {
   for (const { s, A, B } of list) {
     if (s.wholeFile === true || s.skipped === true) continue;
@@ -359,15 +385,24 @@ for (const [, list] of bySource) {
     }
     const header1 = text.slice(0, nl1);
     const header2 = text.slice(nl1 + 1, nl2);
-    const nn = path.basename(String(s.file)).match(/-(\d+)\.js$/)?.[1];
-    if (!nn) problem(`src/${s.file}: file name carries no -NN slice number`);
-    else if (!new RegExp(`^// .+ ${nn} — .+$`).test(header1))
-      problem(`src/${s.file}: header line 1 does not match "// <tag> ${nn} — <marker>": ${header1}`);
-    const want2 = `// Lines ${A}-${B} of ${s.sourceFile} (statement-aligned).`;
+    if (typeof s.cluster !== "string" || !s.cluster)
+      problem(`src/${s.file}: split-spec section records no cluster (the reviewed reading of the window)`);
+    if (typeof s.content !== "string" || !s.content)
+      problem(`src/${s.file}: split-spec section records no content line`);
+    if (s.content && header1 !== `// ${s.file} — ${s.content}`)
+      problem(`src/${s.file}: header line 1 is not "// <file> — <content>": ${header1}`);
+    const want2 = `// Lines ${A}-${B} of ${s.sourceFile} (cluster ${s.cluster}, statement-aligned).`;
     if (header2 !== want2) problem(`src/${s.file}: header line 2 is not the recorded range: ${header2}`);
     const body = text.slice(nl2 + 1);
     const srcLines = getLines(path.join(proj, s.sourceFile));
     const expected = srcLines.slice(A - 1, B).join("\n") + "\n";
+    const hasRecords =
+      Object.keys(renameRecords.files[s.file] ?? {}).length + Object.keys(renameRecords.scoped[s.file] ?? {}).length > 0;
+    if (hasRecords) {
+      renamedSlices++; // exactness is proven in the async rename gate
+      roundOK++;
+      continue;
+    }
     if (body !== expected)
       problem(`src/${s.file}: body is not a byte-exact round-trip of ${s.sourceFile} lines ${A}-${B}`);
     else roundOK++;
@@ -506,24 +541,41 @@ if (manifest) {
 // ── vendor rule: wholeFile sections carry the recorded shape ────────────
 // ADAPT-3: every wholeFile section of THIS mirror gets a content guard pair
 // ([sectionFile, reA, reB]; both must match the recorded range) so a silent
-// readable re-shape fails loudly.
+// readable re-shape fails loudly. The section file names mirror the real
+// vendor module paths the bundler inlined (three.js examples/jsm/…).
 const VENDOR_GUARDS = [
   // the Vite modulepreload polyfill (build machinery)
-  ["assets__index-BogB70q--polyfill-machinery.js", /modulepreload/, /relList/],
+  ["vite-modulepreload-polyfill.js", /modulepreload/, /relList/],
   // the bundled three.js r186 core (constants .. WebGLRenderer)
-  ["assets__index-BogB70q--three-vendor.js", /isWebGLRenderer/, /window\.__THREE__ = `186`/],
-  // the bundled GLTFLoader addon with its KHR_* plugins
-  ["assets__index-BogB70q--gltf-vendor.js", /THREE\.GLTFLoader:/, /KHR_DRACO_MESH_COMPRESSION/],
-  // the bundled MeshoptDecoder module (embedded wasm)
-  ["assets__index-BogB70q--meshopt-vendor.js", /WebAssembly/, /meshopt/i],
+  ["three-core.js", /isWebGLRenderer/, /window\.__THREE__ = `186`/],
+  // three.js examples/jsm/loaders/HDRLoader
+  ["three-examples-hdrloader.js", /THREE\.HDRLoader: Read Error/, /Bad File Format/],
+  // three.js examples/jsm postprocessing stack (Pass .. ShaderPass, GTAO + bloom)
+  ["three-examples-postprocessing.js", /GTAOShader/, /OutputShader/],
+  // three.js examples/jsm/utils/BufferGeometryUtils
+  ["three-examples-buffergeometryutils.js", /THREE\.BufferGeometryUtils/, /toTrianglesDrawMode/],
+  // three.js examples/jsm/utils/SkeletonUtils
+  ["three-examples-skeletonutils.js", /isSkinnedMesh/, /bindMatrix/],
+  // three.js examples/jsm/loaders/GLTFLoader (+ KHR_* plugins + GLTFParser)
+  ["three-examples-gltfloader.js", /THREE\.GLTFLoader:/, /KHR_DRACO_MESH_COMPRESSION/],
+  // the MeshoptDecoder module (embedded wasm)
+  ["three-examples-meshoptdecoder.js", /WebAssembly/, /meshopt/i],
+  // three.js examples/jsm/controls/OrbitControls
+  ["three-examples-orbitcontrols.js", /OrbitControls\.js/, /NONE: -1/],
+  // three.js examples/jsm/objects/Reflector
+  ["three-examples-reflector.js", /ReflectorShader/, /blendOverlay/],
+  // three.js examples/jsm/objects/Sky
+  ["three-examples-sky.js", /SkyShader/, /turbidity/],
+  // three.js examples/jsm/geometries/RoundedBoxGeometry
+  ["three-examples-roundedboxgeometry.js", /RoundedBoxGeometry/, /\bparameters\b/],
   // the Cloudflare challenge script (third-party machinery, dynamic upstream)
-  ["cdn-cgi__challenge-platform__scripts__jsd__main-vendor.js", /_cf_chl_opt/, /challenge-platform/],
+  ["cloudflare-challenge-platform.js", /_cf_chl_opt/, /challenge-platform/],
   // the stylesheet
-  ["assets__index-D7i12YD8.css", /:root/, /--/],
+  ["stylesheet.css", /:root/, /--/],
   // the inline recovery handler's head comment
-  ["index-inline-1-head.js", /Keep recovery available/, /application bundle cannot download/],
+  ["recovery-handler-head.js", /Keep recovery available/, /application bundle cannot download/],
   // the inline Cloudflare bot-challenge injection
-  ["index-inline-2.js", /challenge-platform/, /__CF\$cv\$params/],
+  ["cloudflare-injection.js", /challenge-platform/, /__CF\$cv\$params/],
 ];
 for (const [file, reA, reB] of VENDOR_GUARDS) {
   const sec = sections.find((s) => s.file === file);
@@ -626,6 +678,82 @@ function loadPinnedPrettier() {
 }
 
 (async () => {
+  // ── the reviewed rename layer (extended 2026-10-14) ────────────────────
+  // Every committed src slice must equal its pristine readable range with the
+  // recorded rename records applied, spliced at identifier-token spans only:
+  //   files[name]  -> target          word-boundary rename (every eligible occurrence)
+  //   scoped[name] -> [[i, target]]   rename at the exact base token index i
+  // The heavy gates (verify-rename reproduces/references/bindings, check-chunk
+  // whole-program re-splice + cross-slice reference drift) are their own tools;
+  // this is the in-gate proof that the committed layer and rename-map.json
+  // agree, and that untouched slices carry no records.
+  let renameNote = "no rename layer (rename-map.json absent)";
+  const renameMapPath = path.join(proj, "rename-map.json");
+  if (fs.existsSync(renameMapPath)) {
+    let rm = null;
+    try {
+      rm = JSON.parse(fs.readFileSync(renameMapPath, "utf8"));
+    } catch (e) {
+      problem(`rename-map.json does not parse: ${e.message}`);
+    }
+    let engine = null;
+    try {
+      engine = await import(pathToFileURL(path.join(here, "engine", "rename-layer.mjs")).href);
+    } catch (e) {
+      problem(`engine/rename-layer.mjs is not importable: ${e.message}`);
+    }
+    if (rm && engine) {
+      const flatMap = rm.files ?? {};
+      const scopedMap = rm.scoped ?? {};
+      for (const key of [...Object.keys(flatMap), ...Object.keys(scopedMap)])
+        if (!onDisk.includes(key) && !rangedFiles.has(key)) problem(`rename-map.json records ${key} which is not a src slice`);
+      let reproduced = 0;
+      let renamedFiles = 0;
+      for (const s of sections) {
+        if (s.wholeFile === true || s.skipped === true) continue;
+        if (!s.file || typeof s.sourceFile !== "string") continue;
+        const srcAbs = path.join(srcDir, path.basename(String(s.file)));
+        if (!fs.existsSync(srcAbs)) continue;
+        const flat = flatMap[s.file] || {};
+        const scoped = scopedMap[s.file] || {};
+        const hasRecords = Object.keys(flat).length + Object.keys(scoped).length > 0;
+        if (hasRecords) renamedFiles++;
+        const indexed = new Map();
+        for (const [name, list] of Object.entries(scoped)) {
+          if (!Array.isArray(list)) {
+            problem(`rename-map.json scoped ${s.file}: ${name} is not an array`);
+            continue;
+          }
+          for (const entry of list) {
+            if (!Array.isArray(entry) || !Number.isInteger(entry[0]) || typeof entry[1] !== "string") {
+              problem(`rename-map.json scoped ${s.file}: bad entry for ${name}`);
+              continue;
+            }
+            if (indexed.has(entry[0])) problem(`rename-map.json scoped ${s.file}: token index ${entry[0]} recorded twice`);
+            indexed.set(entry[0], entry[1]);
+          }
+        }
+        const baseRange = getLines(path.join(proj, s.sourceFile)).slice(s.startLine - 1, s.endLine).join("\n") + "\n";
+        const committed = fs.readFileSync(srcAbs, "utf8");
+        const nl2 = committed.indexOf("\n", committed.indexOf("\n") + 1);
+        const body = committed.slice(nl2 + 1);
+        let got = null;
+        try {
+          got = engine.applyRecords(baseRange, flat, indexed);
+        } catch (e) {
+          problem(`rename layer ${s.file}: applying the recorded map failed: ${e.message}`);
+          continue;
+        }
+        if (got !== body)
+          problem(`rename layer ${s.file}: the recorded map does not reproduce the committed slice from its readable range`);
+        else reproduced++;
+        if (!hasRecords && body !== baseRange)
+          problem(`rename layer ${s.file}: changes the readable range but has no rename records`);
+      }
+      renameNote = `rename layer: ${renamedFiles} renamed file(s) reproduce from their records (${reproduced}/${ranged} slice(s) exact)`;
+    }
+  }
+
   let renderNote = `prettier ${PINNED} not importable — renderOptions recorded, re-render check skipped`;
   const prettierPath = loadPinnedPrettier();
   if (prettierPath) {
@@ -689,6 +817,6 @@ function loadPinnedPrettier() {
       `${inlineBlocks} inline content block(s) with twins + index-inline-map.json, ` +
       `${resolvedImports}/${checkedImports} imports resolve inside the capture (${whitelisted} whitelisted machinery, ` +
       `${knownGapImports} accepted as recorded 404 gaps), ` +
-      `${renderNote}, capture manifest free of derived layers)`,
+      `${renameNote}, ${renderNote}, capture manifest free of derived layers)`,
   );
 })();

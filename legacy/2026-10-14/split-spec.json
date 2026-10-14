@@ -1,0 +1,802 @@
+{
+  "project": "stillwater",
+  "kind": "statement-aligned-slices",
+  "defaultFile": "src/assets__index-BogB70q--01.js",
+  "note": "STILLWATER — the mill island (https://stillwater.zavrenn.chatgpt.site/) is capture-class: a Vite-built three.js island game served at the origin root by a *.chatgpt.site static deployment (Cloudflare-fronted). §0.4 fork-over-mirror was checked on 2026-10-13 — no public source repo exists (the page HTML/JS carry no repository link and no source-map URL; a GitHub search finds nothing for the project or the slug), so the mirror stands. Derived pipeline: capture → pinned prettier 3.9.6 (module API, default options, single pass verified idempotent — never the CLI: it respects .gitignore and can silently echo its input) → readable/<name>.pretty.js|css per captured JS/CSS file (dirs flattened with __; every pretty provably NOT byte-identical to its capture source) → statement-aligned slices src/<tag>-NN.js of the app bundle (top-level declaration boundaries only, ~250-350 line windows; oversized single declarations stay whole) with an exact 2-line provenance header. Every slice parses standalone under `node --input-type=module --check -` and round-trips byte-exact to its recorded readable line range. Vendor rule — wholeFile sections, never sliced, all content-anchored and asserted: the Vite modulepreload polyfill (build machinery), the three.js r186 core (constants .. WebGLRenderer, `window.__THREE__ = '186'`), the bundled GLTFLoader addon with its KHR_* plugins and DRACO/KTX2/meshopt hooks, and the MeshoptDecoder module with its embedded wasm. The Cloudflare bot-challenge script (cdn-cgi/challenge-platform/scripts/jsd/main.js, recorded `dynamic: true` — it rotates per response) is third-party machinery: wholeFile, never sliced. Stylesheet rule: assets/index-D7i12YD8.css is wholeFile. Inline <script> scan: index.html carries TWO inline script blocks — the app's recovery handler (head comment wholeFile + one statement-aligned slice) and the Cloudflare bot-challenge injection (third-party machinery, wholeFile); their byte ranges + sha256 are recorded in readable/index-inline-map.json. Identifiers in src/ are the bundle's own minified names — the rename campaign (PLAN §5) is recorded as an open task in README.md, not claimed here. Capture bytes are untouched by everything above; re-cut with `node tools/derive.mjs` after any capture refresh. `node tools/audit.js` is the gate.",
+  "renderOptions": {
+    "_default": "prettier 3.9.6, module API, default options, single pass (re-format verified idempotent at derive time) — never the CLI: it respects .gitignore and can silently echo its input",
+    "js": "parser babel, no plugins",
+    "css": "parser css, no plugins",
+    "json": "parser json, no plugins (inline importmap blocks, if any)"
+  },
+  "source": "readable/: 4 JS pretties (2 sliced script source(s), 2 wholeFile machinery/vendor) + 1 CSS pretties; src/: 77 statement-aligned slices across 2 script source(s); 0 skipped section(s); 8 wholeFile section(s); capture: 157 files under .upstream/manifest.json; inline scan: index.html (2 inline content block(s)); derived 2026-10-13.",
+  "inline": {
+    "scanned": [
+      "index.html"
+    ],
+    "contentBlocks": 2,
+    "notRendered": 0,
+    "note": "index.html carries 2 inline script blocks: #1 the app's recovery handler (real app code — head comment wholeFile + one statement-aligned slice) and #2 the Cloudflare bot-challenge injection (third-party machinery, wholeFile). No inline <style> blocks exist — the stylesheet is the external asset. Byte ranges + sha256 are recorded in readable/index-inline-map.json."
+  },
+  "externalDependencies": [],
+  "sources": [
+    {
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js",
+      "capture": "assets/index-BogB70q-.js",
+      "captureKind": "file",
+      "captureSha256": "d62ee613ebf26572a99dc92589f38bebde4971f929d4f36caa30d2d2f40fd137",
+      "captureBytes": 1372053,
+      "prettyLines": 66160,
+      "prettyBytes": 2025189,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "assets__index-BogB70q-",
+      "statements": 745,
+      "slices": 76,
+      "derived": "readable + 76 statement-aligned slice(s) + 4 wholeFile vendor region(s)"
+    },
+    {
+      "sourceFile": "readable/cdn-cgi__challenge-platform__scripts__jsd__main.pretty.js",
+      "capture": "cdn-cgi/challenge-platform/scripts/jsd/main.js",
+      "captureKind": "file",
+      "captureSha256": "bf2fe4c409d4b1c929fc8f86e2be3813fc829c91b63df0d798149e4943614eb8",
+      "captureBytes": 23474,
+      "prettyLines": 2027,
+      "prettyBytes": 52713,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "cdn-cgi__challenge-platform__scripts__jsd__main",
+      "slices": 0,
+      "derived": "readable only (third-party machinery, wholeFile)",
+      "what": "Cloudflare bot-challenge script"
+    },
+    {
+      "sourceFile": "readable/assets__index-D7i12YD8.pretty.css",
+      "capture": "assets/index-D7i12YD8.css",
+      "captureKind": "file",
+      "captureSha256": "4478cde6b47ce3c64fefa8f1627c20ee2cc249e0b706d9c47f25bc7a749b5e11",
+      "captureBytes": 16734,
+      "prettyLines": 1269,
+      "prettyBytes": 21441,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "assets__index-D7i12YD8",
+      "slices": 0,
+      "derived": "readable only (stylesheet, wholeFile)"
+    },
+    {
+      "sourceFile": "readable/index-inline-1.pretty.js",
+      "capture": "index.html",
+      "captureKind": "inline-script",
+      "captureByteStart": 23376,
+      "captureByteEnd": 23748,
+      "captureSha256": "344a276efeaa37850c6fa95778d4688bf3b140611e662a5e55f41c06ccaf16b7",
+      "captureBytes": 372,
+      "prettyLines": 11,
+      "prettyBytes": 382,
+      "prettySha256": "dd8bb6ddf37a6df285747efc02422a68460417b42a28d75d915d23059166fac1",
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "index-inline-1",
+      "statements": 1,
+      "slices": 1,
+      "derived": "readable + 1 statement-aligned slice(s) + 1 wholeFile region(s)"
+    },
+    {
+      "sourceFile": "readable/index-inline-2.pretty.js",
+      "capture": "index.html",
+      "captureKind": "inline-script",
+      "captureByteStart": 23766,
+      "captureByteEnd": 24687,
+      "captureSha256": "d439928fed9aa18484954be5f3fcca56dc297c77d88741b3e54cc4f67ebba225",
+      "captureBytes": 921,
+      "prettyLines": 33,
+      "prettyBytes": 1162,
+      "prettySha256": "89e9b3ab2aafa373f7c10c90bda46f00bee5405d7fbf78b8e041b1ae0941707a",
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "index-inline-2",
+      "slices": 0,
+      "derived": "readable only (inline block, wholeFile)"
+    }
+  ],
+  "sections": [
+    {
+      "file": "assets__index-BogB70q--polyfill-machinery.js",
+      "wholeFile": true,
+      "title": "assets__index-BogB70q- — Vite modulepreload polyfill (build machinery, whole-file, never sliced)",
+      "desc": "Lines 1-31 of readable/assets__index-BogB70q-.pretty.js: the Vite-generated modulepreload polyfill IIFE (`link[rel=modulepreload]` relList.supports check + fetch warm-up) — build machinery, not app code; indexed whole-file in readable/, never sliced.",
+      "note": "whole-file region (vendor/machinery rule): indexed in readable/, never sliced",
+      "startLine": 1,
+      "endLine": 31,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--three-vendor.js",
+      "wholeFile": true,
+      "title": "assets__index-BogB70q- — bundled three.js r186 core (vendor region, whole-file, never sliced)",
+      "desc": "Lines 32-29497 of readable/assets__index-BogB70q-.pretty.js: the bundled three.js r186 engine core (constants, math, color management, textures, geometries, materials, shader chunk/lib tables, objects, the `window.__THREE__` revision-186 registration and the WebGLRenderer) — vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+      "note": "whole-file region (vendor/machinery rule): indexed in readable/, never sliced",
+      "startLine": 32,
+      "endLine": 29497,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--01.js",
+      "title": "assets__index-BogB70q- 01 — math",
+      "desc": "Lines 29498-29835. Markers: math(9), valid(8).",
+      "startLine": 29498,
+      "endLine": 29835,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--02.js",
+      "title": "assets__index-BogB70q- 02 — math",
+      "desc": "Lines 29836-30183. Markers: math(15), max(10).",
+      "startLine": 29836,
+      "endLine": 30183,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--03.js",
+      "title": "assets__index-BogB70q- 03 — math",
+      "desc": "Lines 30184-30493. Markers: math(34), hypot(7).",
+      "startLine": 30184,
+      "endLine": 30493,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--04.js",
+      "title": "assets__index-BogB70q- 04 — fog",
+      "desc": "Lines 30494-30607. Markers: fog(6), intensity(6).",
+      "startLine": 30494,
+      "endLine": 30607,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--05.js",
+      "title": "assets__index-BogB70q- 05 — overridematerial",
+      "desc": "Oversized single declaration (kept whole). Lines 30608-30975. Markers: overridematerial(7), mesh(5).",
+      "startLine": 30608,
+      "endLine": 30975,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--06.js",
+      "title": "assets__index-BogB70q- 06 — math",
+      "desc": "Lines 30976-31203. Markers: math(13), floor(7).",
+      "startLine": 30976,
+      "endLine": 31203,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--07.js",
+      "title": "assets__index-BogB70q- 07 — uniforms",
+      "desc": "Oversized single declaration (kept whole). Lines 31204-31970. Markers: uniforms(60), gtaomaterial(39).",
+      "startLine": 31204,
+      "endLine": 31970,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--08.js",
+      "title": "assets__index-BogB70q- 08 — denoise",
+      "desc": "Lines 31971-31979. Markers: denoise(1), depth(1).",
+      "startLine": 31971,
+      "endLine": 31979,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--09.js",
+      "title": "assets__index-BogB70q- 09 — uniforms",
+      "desc": "Lines 31980-32323. Markers: uniforms(25), texture(16).",
+      "startLine": 31980,
+      "endLine": 32323,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--10.js",
+      "title": "assets__index-BogB70q- 10 — uniforms",
+      "desc": "Lines 32324-32654. Markers: uniforms(29), material(22).",
+      "startLine": 32324,
+      "endLine": 32654,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--11.js",
+      "title": "assets__index-BogB70q- 11 — console",
+      "desc": "Lines 32655-32986. Markers: console(16), push(16).",
+      "startLine": 32655,
+      "endLine": 32986,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--12.js",
+      "title": "assets__index-BogB70q- 12 — skeleton",
+      "desc": "Lines 32987-33014. Markers: skeleton(5), bindmatrix(3).",
+      "startLine": 32987,
+      "endLine": 33014,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--gltf-vendor.js",
+      "wholeFile": true,
+      "title": "assets__index-BogB70q- — bundled GLTFLoader addon with its KHR_* plugins (vendor region, whole-file, never sliced)",
+      "desc": "Lines 33015-34092 of readable/assets__index-BogB70q-.pretty.js: the three.js examples/jsm GLTFLoader the build inlined (the Loader subclass with its DRACOLoader/KTX2/meshopt hooks, `THREE.GLTFLoader:` error strings, the KHR_* plugin classes and their OPAQUE/MASK/BLEND material enum) — vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+      "note": "whole-file region (vendor/machinery rule): indexed in readable/, never sliced",
+      "startLine": 33015,
+      "endLine": 34092,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--13.js",
+      "title": "assets__index-BogB70q- 13 — extras",
+      "desc": "Lines 34093-34238. Markers: extras(7), search(6).",
+      "startLine": 34093,
+      "endLine": 34238,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--14.js",
+      "title": "assets__index-BogB70q- 14 — push",
+      "desc": "Oversized single declaration (kept whole). Lines 34239-35240. Markers: push(38), promise(29).",
+      "startLine": 34239,
+      "endLine": 35240,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--15.js",
+      "title": "assets__index-BogB70q- 15 — math",
+      "desc": "Lines 35241-35327. Markers: math(9), max(8).",
+      "startLine": 35241,
+      "endLine": 35327,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--meshopt-vendor.js",
+      "wholeFile": true,
+      "title": "assets__index-BogB70q- — bundled MeshoptDecoder module with embedded wasm (vendor region, whole-file, never sliced)",
+      "desc": "Lines 35328-35526 of readable/assets__index-BogB70q-.pretty.js: the meshoptimizer decoder module the build inlined (its own minified runtime plus the embedded wasm loaded through `WebAssembly.instantiate`) that the app hands to the GLTFLoader via `setMeshoptDecoder` — vendor, not app code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+      "note": "whole-file region (vendor/machinery rule): indexed in readable/, never sliced",
+      "startLine": 35328,
+      "endLine": 35526,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--16.js",
+      "title": "assets__index-BogB70q- 16 — fragmentshader",
+      "desc": "Lines 35527-35868. Markers: fragmentshader(22), vertexshader(16).",
+      "startLine": 35527,
+      "endLine": 35868,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--17.js",
+      "title": "assets__index-BogB70q- 17 — material",
+      "desc": "Lines 35869-36082. Markers: material(10), vertexshader(10).",
+      "startLine": 35869,
+      "endLine": 36082,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--18.js",
+      "title": "assets__index-BogB70q- 18 — fragmentshader",
+      "desc": "Lines 36083-36352. Markers: fragmentshader(16), vertexshader(16).",
+      "startLine": 36083,
+      "endLine": 36352,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--19.js",
+      "title": "assets__index-BogB70q- 19 — asset",
+      "desc": "Oversized single declaration (kept whole). Lines 36353-48593. Markers: asset(1338), angle(1337).",
+      "startLine": 36353,
+      "endLine": 48593,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--20.js",
+      "title": "assets__index-BogB70q- 20 — math",
+      "desc": "Lines 48594-48872. Markers: math(55), hypot(15).",
+      "startLine": 48594,
+      "endLine": 48872,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--21.js",
+      "title": "assets__index-BogB70q- 21 — math",
+      "desc": "Lines 48873-49114. Markers: math(49), max(14).",
+      "startLine": 48873,
+      "endLine": 49114,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--22.js",
+      "title": "assets__index-BogB70q- 22 — math",
+      "desc": "Lines 49115-49461. Markers: math(28), speed(14).",
+      "startLine": 49115,
+      "endLine": 49461,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--23.js",
+      "title": "assets__index-BogB70q- 23 — add",
+      "desc": "Lines 49462-49793. Markers: add(8), material(7).",
+      "startLine": 49462,
+      "endLine": 49793,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--24.js",
+      "title": "assets__index-BogB70q- 24 — fragmentshader",
+      "desc": "Lines 49794-50118. Markers: fragmentshader(18), test(13).",
+      "startLine": 49794,
+      "endLine": 50118,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--25.js",
+      "title": "assets__index-BogB70q- 25 — math",
+      "desc": "Lines 50119-50463. Markers: math(32), material(14).",
+      "startLine": 50119,
+      "endLine": 50463,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--26.js",
+      "title": "assets__index-BogB70q- 26 — math",
+      "desc": "Oversized single declaration (kept whole). Lines 50464-50814. Markers: math(24), cos(6).",
+      "startLine": 50464,
+      "endLine": 50814,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--27.js",
+      "title": "assets__index-BogB70q- 27 — math",
+      "desc": "Lines 50815-51125. Markers: math(29), fragmentshader(16).",
+      "startLine": 50815,
+      "endLine": 51125,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--28.js",
+      "title": "assets__index-BogB70q- 28 — math",
+      "desc": "Lines 51126-51464. Markers: math(43), abs(12).",
+      "startLine": 51126,
+      "endLine": 51464,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--29.js",
+      "title": "assets__index-BogB70q- 29 — math",
+      "desc": "Lines 51465-51716. Markers: math(40), hypot(11).",
+      "startLine": 51465,
+      "endLine": 51716,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--30.js",
+      "title": "assets__index-BogB70q- 30 — domelement",
+      "desc": "Oversized single declaration (kept whole). Lines 51717-52364. Markers: domelement(27), math(25).",
+      "startLine": 51717,
+      "endLine": 52364,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--31.js",
+      "title": "assets__index-BogB70q- 31 — state",
+      "desc": "Lines 52365-52610. Markers: state(20), domelement(10).",
+      "startLine": 52365,
+      "endLine": 52610,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--32.js",
+      "title": "assets__index-BogB70q- 32 — math",
+      "desc": "Lines 52611-52830. Markers: math(16), position(15).",
+      "startLine": 52611,
+      "endLine": 52830,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--33.js",
+      "title": "assets__index-BogB70q- 33 — elements",
+      "desc": "Lines 52831-53173. Markers: elements(16), asset(9).",
+      "startLine": 52831,
+      "endLine": 53173,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--34.js",
+      "title": "assets__index-BogB70q- 34 — math",
+      "desc": "Lines 53174-53473. Markers: math(57), max(21).",
+      "startLine": 53174,
+      "endLine": 53473,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--35.js",
+      "title": "assets__index-BogB70q- 35 — math",
+      "desc": "Lines 53474-53649. Markers: math(11), float(9).",
+      "startLine": 53474,
+      "endLine": 53649,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--36.js",
+      "title": "assets__index-BogB70q- 36 — math",
+      "desc": "Lines 53650-53974. Markers: math(20), born(12).",
+      "startLine": 53650,
+      "endLine": 53974,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--37.js",
+      "title": "assets__index-BogB70q- 37 — max",
+      "desc": "Lines 53975-54056. Markers: max(8), min(8).",
+      "startLine": 53975,
+      "endLine": 54056,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--38.js",
+      "title": "assets__index-BogB70q- 38 — math",
+      "desc": "Lines 54057-54403. Markers: math(25), age(13).",
+      "startLine": 54057,
+      "endLine": 54403,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--39.js",
+      "title": "assets__index-BogB70q- 39 — math",
+      "desc": "Lines 54404-54641. Markers: math(30), speed(14).",
+      "startLine": 54404,
+      "endLine": 54641,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--40.js",
+      "title": "assets__index-BogB70q- 40 — visible",
+      "desc": "Lines 54642-54899. Markers: visible(9), attributes(8).",
+      "startLine": 54642,
+      "endLine": 54899,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--41.js",
+      "title": "assets__index-BogB70q- 41 — visible",
+      "desc": "Oversized single declaration (kept whole). Lines 54900-55390. Markers: visible(13), material(11).",
+      "startLine": 54900,
+      "endLine": 55390,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--42.js",
+      "title": "assets__index-BogB70q- 42 — math",
+      "desc": "Oversized single declaration (kept whole). Lines 55391-55877. Markers: math(24), float32array(14).",
+      "startLine": 55391,
+      "endLine": 55877,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--43.js",
+      "title": "assets__index-BogB70q- 43 — math",
+      "desc": "Lines 55878-56197. Markers: math(35), duration(18).",
+      "startLine": 55878,
+      "endLine": 56197,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--44.js",
+      "title": "assets__index-BogB70q- 44 — math",
+      "desc": "Lines 56198-56546. Markers: math(59), sin(17).",
+      "startLine": 56198,
+      "endLine": 56546,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--45.js",
+      "title": "assets__index-BogB70q- 45 — math",
+      "desc": "Lines 56547-56888. Markers: math(43), sin(12).",
+      "startLine": 56547,
+      "endLine": 56888,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--46.js",
+      "title": "assets__index-BogB70q- 46 — math",
+      "desc": "Lines 56889-57216. Markers: math(34), origin(18).",
+      "startLine": 56889,
+      "endLine": 57216,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--47.js",
+      "title": "assets__index-BogB70q- 47 — math",
+      "desc": "Lines 57217-57549. Markers: math(75), connect(12).",
+      "startLine": 57217,
+      "endLine": 57549,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--48.js",
+      "title": "assets__index-BogB70q- 48 — math",
+      "desc": "Lines 57550-57899. Markers: math(31), ctx(16).",
+      "startLine": 57550,
+      "endLine": 57899,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--49.js",
+      "title": "assets__index-BogB70q- 49 — vertexshader",
+      "desc": "Lines 57900-58219. Markers: vertexshader(14), math(12).",
+      "startLine": 57900,
+      "endLine": 58219,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--50.js",
+      "title": "assets__index-BogB70q- 50 — math",
+      "desc": "Lines 58220-58526. Markers: math(6), fragmentshader(3).",
+      "startLine": 58220,
+      "endLine": 58526,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--51.js",
+      "title": "assets__index-BogB70q- 51 — math",
+      "desc": "Lines 58527-58731. Markers: math(17), shadowmap(6).",
+      "startLine": 58527,
+      "endLine": 58731,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--52.js",
+      "title": "assets__index-BogB70q- 52 — getworldposition",
+      "desc": "Lines 58732-59063. Markers: getworldposition(20), copy(17).",
+      "startLine": 58732,
+      "endLine": 59063,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--53.js",
+      "title": "assets__index-BogB70q- 53 — ankle",
+      "desc": "Lines 59064-59085. Markers: ankle(1), clamp(1).",
+      "startLine": 59064,
+      "endLine": 59085,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--54.js",
+      "title": "assets__index-BogB70q- 54 — clone",
+      "desc": "Oversized single declaration (kept whole). Lines 59086-59536. Markers: clone(35), current(33).",
+      "startLine": 59086,
+      "endLine": 59536,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--55.js",
+      "title": "assets__index-BogB70q- 55 — math",
+      "desc": "Lines 59537-59881. Markers: math(19), weights(16).",
+      "startLine": 59537,
+      "endLine": 59881,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--56.js",
+      "title": "assets__index-BogB70q- 56 — math",
+      "desc": "Lines 59882-60201. Markers: math(48), heading(16).",
+      "startLine": 59882,
+      "endLine": 60201,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--57.js",
+      "title": "assets__index-BogB70q- 57 — quaternion",
+      "desc": "Lines 60202-60549. Markers: quaternion(24), getworldposition(22).",
+      "startLine": 60202,
+      "endLine": 60549,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--58.js",
+      "title": "assets__index-BogB70q- 58 — math",
+      "desc": "Lines 60550-60822. Markers: math(13), fragmentshader(8).",
+      "startLine": 60550,
+      "endLine": 60822,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--59.js",
+      "title": "assets__index-BogB70q- 59 — math",
+      "desc": "Lines 60823-61144. Markers: math(29), heading(12).",
+      "startLine": 60823,
+      "endLine": 61144,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--60.js",
+      "title": "assets__index-BogB70q- 60 — math",
+      "desc": "Lines 61145-61209. Markers: math(15), boat(8).",
+      "startLine": 61145,
+      "endLine": 61209,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--61.js",
+      "title": "assets__index-BogB70q- 61 — math",
+      "desc": "Lines 61210-61558. Markers: math(44), heading(23).",
+      "startLine": 61210,
+      "endLine": 61558,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--62.js",
+      "title": "assets__index-BogB70q- 62 — clone",
+      "desc": "Lines 61559-61829. Markers: clone(23), getworldposition(23).",
+      "startLine": 61559,
+      "endLine": 61829,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--63.js",
+      "title": "assets__index-BogB70q- 63 — math",
+      "desc": "Lines 61830-62087. Markers: math(13), fromarray(12).",
+      "startLine": 61830,
+      "endLine": 62087,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--64.js",
+      "title": "assets__index-BogB70q- 64 — clone",
+      "desc": "Lines 62088-62435. Markers: clone(31), position(22).",
+      "startLine": 62088,
+      "endLine": 62435,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--65.js",
+      "title": "assets__index-BogB70q- 65 — math",
+      "desc": "Lines 62436-62781. Markers: math(31), quaternion(23).",
+      "startLine": 62436,
+      "endLine": 62781,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--66.js",
+      "title": "assets__index-BogB70q- 66 — color",
+      "desc": "Lines 62782-63064. Markers: color(8), roughness(8).",
+      "startLine": 62782,
+      "endLine": 63064,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--67.js",
+      "title": "assets__index-BogB70q- 67 — math",
+      "desc": "Lines 63065-63373. Markers: math(34), position(17).",
+      "startLine": 63065,
+      "endLine": 63373,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--68.js",
+      "title": "assets__index-BogB70q- 68 — point",
+      "desc": "Lines 63374-63569. Markers: point(17), math(10).",
+      "startLine": 63374,
+      "endLine": 63569,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--69.js",
+      "title": "assets__index-BogB70q- 69 — math",
+      "desc": "Lines 63570-63906. Markers: math(14), add(8).",
+      "startLine": 63570,
+      "endLine": 63906,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--70.js",
+      "title": "assets__index-BogB70q- 70 — math",
+      "desc": "Lines 63907-64206. Markers: math(20), active(16).",
+      "startLine": 63907,
+      "endLine": 64206,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--71.js",
+      "title": "assets__index-BogB70q- 71 — textcontent",
+      "desc": "Lines 64207-64531. Markers: textcontent(26), transitioning(23).",
+      "startLine": 64207,
+      "endLine": 64531,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--72.js",
+      "title": "assets__index-BogB70q- 72 — addeventlistener",
+      "desc": "Lines 64532-64875. Markers: addeventlistener(25), active(22).",
+      "startLine": 64532,
+      "endLine": 64875,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--73.js",
+      "title": "assets__index-BogB70q- 73 — math",
+      "desc": "Lines 64876-65072. Markers: math(13), active(12).",
+      "startLine": 64876,
+      "endLine": 65072,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--74.js",
+      "title": "assets__index-BogB70q- 74 — createelement",
+      "desc": "Oversized single declaration (kept whole). Lines 65073-65681. Markers: createelement(52), append(51).",
+      "startLine": 65073,
+      "endLine": 65681,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--75.js",
+      "title": "assets__index-BogB70q- 75 — reducedmotion",
+      "desc": "Lines 65682-65850. Markers: reducedmotion(5), requestanimationframe(5).",
+      "startLine": 65682,
+      "endLine": 65850,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "assets__index-BogB70q--76.js",
+      "title": "assets__index-BogB70q- 76 — active",
+      "desc": "Lines 65851-66160. Markers: active(22), update(20).",
+      "startLine": 65851,
+      "endLine": 66160,
+      "sourceFile": "readable/assets__index-BogB70q-.pretty.js"
+    },
+    {
+      "file": "cdn-cgi__challenge-platform__scripts__jsd__main-vendor.js",
+      "wholeFile": true,
+      "title": "cdn-cgi__challenge-platform__scripts__jsd__main — Cloudflare bot-challenge script (third-party machinery, whole-file, never sliced)",
+      "desc": "Lines 1-2027 of readable/cdn-cgi__challenge-platform__scripts__jsd__main.pretty.js: The Cloudflare bot-challenge script the entry document's injected inline block loads (`/cdn-cgi/challenge-platform/scripts/jsd/main.js`) — Cloudflare machinery, not app code; the deployment rotates it per response (recorded `dynamic: true`), so it is indexed whole-file in readable/ and never sliced or rewritten.",
+      "note": "whole-file (third-party machinery rule): indexed in readable/, never sliced",
+      "startLine": 1,
+      "endLine": 2027,
+      "sourceFile": "readable/cdn-cgi__challenge-platform__scripts__jsd__main.pretty.js"
+    },
+    {
+      "file": "assets__index-D7i12YD8.css",
+      "wholeFile": true,
+      "title": "assets__index-D7i12YD8 — stylesheet (whole-file, never sliced)",
+      "desc": "Lines 1-1269 of readable/assets__index-D7i12YD8.pretty.css. Whole-file (stylesheet rule): the capture stylesheet is indexed whole in readable/, never sliced.",
+      "note": "whole-file (stylesheet, not sliced): CSS is indexed whole in readable/",
+      "startLine": 1,
+      "endLine": 1269,
+      "sourceFile": "readable/assets__index-D7i12YD8.pretty.css"
+    },
+    {
+      "file": "index-inline-1-head.js",
+      "wholeFile": true,
+      "title": "index-inline-1-head — recovery handler header comment (whole-file, never sliced)",
+      "desc": "Lines 1-1 of readable/index-inline-1.pretty.js: The inline recovery handler's leading comment (`// Keep recovery available even if the application bundle cannot download.`) — indexed whole-file in readable/, never sliced; the statement below is the src/ slice.",
+      "note": "whole-file region (header comment rule): indexed in readable/, never sliced",
+      "startLine": 1,
+      "endLine": 1,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-01.js",
+      "title": "index-inline-1 01 — event",
+      "desc": "Lines 2-11. Markers: event(2), getelementbyid(2).",
+      "startLine": 2,
+      "endLine": 11,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-2.js",
+      "wholeFile": true,
+      "title": "index-inline-2 — Cloudflare bot-challenge injection (third-party machinery; token rotates per response) (whole-file, never sliced)",
+      "desc": "Lines 1-33 of readable/index-inline-2.pretty.js. Whole-file: the entry document's inline script block (921 B at bytes 23766-24687 of index.html) is indexed whole and never sliced.",
+      "note": "whole-file (third-party machinery, not sliced)",
+      "startLine": 1,
+      "endLine": 33,
+      "sourceFile": "readable/index-inline-2.pretty.js"
+    }
+  ],
+  "notRendered": []
+}
