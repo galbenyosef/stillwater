@@ -90,9 +90,30 @@ requests them; they belong to an unpublished content variant).
   bundle (66,160 lines), the stylesheet (1,269), the Cloudflare script (2,027)
   and the two inline entry-document blocks (11 + 33), plus
   `readable/index-inline-map.json` (inline byte ranges + sha256)
-- `src/` + `split-spec.json` — 77 statement-aligned slices (76 of the app
-  bundle + 1 of the inline recovery handler) with the recorded derivation spec
+- `src/` + `split-spec.json` — the reversed app layer (2026-10-14 structure
+  pass): 68 statement-aligned slices of the app bundle's own code — every slice
+  a whole run of top-level statements inside ONE reviewed semantic cluster
+  (`src/<cluster>-NN.js`: `island-01.js`, `water-surface-01.js`,
+  `waterwheel-kinematics-01.js`, `keeper-poses-02.js`, …) plus the inline
+  recovery handler — with the derivation spec recording each cluster and its
+  reading. 12 vendor module regions inside the bundle (three.js core,
+  HDRLoader, the examples postprocessing stack, BufferGeometryUtils,
+  SkeletonUtils, GLTFLoader + parser, MeshoptDecoder, OrbitControls, Reflector,
+  Sky, RoundedBoxGeometry, the Vite polyfill) are wholeFile sections: indexed
+  in `readable/`, content-anchored, never sliced
+- `rename-map.json` — the recovered per-file rename layer over `src/`
+  (`files` word-boundary map + `scoped` token-index records; 62 files, 519
+  names, 2,173 identifier splices)
+- `legacy/2026-10-14/` — the superseded derived layer (the previous 77 slices +
+  its `split-spec.json`), kept as the rollback copy
 - `tools/derive.mjs` — rebuild `readable/` + `src/` + `split-spec.json`
+- `tools/apply-names.mjs` — apply the reviewed renames (`tools/names.json`)
+- `tools/recover-scoped-map.mjs` — record the achieved map into `rename-map.json`
+- `tools/verify-rename.mjs` — per-file rename gate (reproduces/references/bindings)
+- `tools/check-chunk.mjs` — whole-bundle gate (re-splice byte-identical,
+  cross-slice references resolve)
+- `tools/refcheck.mjs`, `tools/engine/rename-layer.mjs` — the shared
+  scope/token engine the rename tools use (acorn from `tools/.deps`, gitignored)
 - `tools/capture.mjs` — the byte-exact capture + closure crawler (re-runnable;
   `--check` is the static closure audit)
 - `tools/update.mjs` — read-only drift probe against the live site
@@ -148,10 +169,18 @@ real CF zone; offline it simply fails and the game is unaffected).
 ## Verify
 
 ```
-node tools/verify.mjs          # re-hash the capture against the manifest
-node tools/audit.js            # derived-layer integrity gate (AUDIT PASS)
-node tools/capture.mjs --check # static closure: 0 unresolved beyond recorded gaps
+node tools/verify.mjs             # re-hash the capture against the manifest
+node tools/audit.js               # derived-layer integrity gate (AUDIT PASS)
+node tools/verify-rename.mjs --all # rename layer: reproduces/references/bindings
+node tools/check-chunk.mjs        # whole-bundle re-splice + cross-slice resolve
+node tools/capture.mjs --check    # static closure: 0 unresolved beyond recorded gaps
 node tools/net-crosscheck.mjs docs/boot-network-2026-10-13.json
+```
+
+Rebuild the derived layers from the frozen capture (byte-identical, proven):
+
+```
+node tools/derive.mjs && node tools/apply-names.mjs --all && node tools/recover-scoped-map.mjs
 ```
 
 ## Updating from upstream
@@ -169,6 +198,10 @@ re-cutting the derived layers with `node tools/derive.mjs` (never carrying the
 old derived layer over); replaced files are copied to `legacy/<date>/` first.
 
 ### 2026-10-13 derivation
+
+> **Superseded 2026-10-14** by the structure pass + rename campaign below: the
+> 77-slice `src/` and its `split-spec.json` are archived at
+> `legacy/2026-10-14/`. Kept as the record of the first-cut derivation.
 
 Both derived layers are in place, cut from the recorded capture (capture bytes
 untouched — `node tools/verify.mjs` re-hashes all 157 files):
@@ -233,6 +266,140 @@ untouched — `node tools/verify.mjs` re-hashes all 157 files):
   The GitHub user `zavrenn` (the subdomain's owner, 7 public repos) publishes
   no Stillwater repository — so there is nothing to fork, and the mirror
   stands.
+
+### 2026-10-14 structure pass + identifier rename campaign (the open task, closed)
+
+**Source maps re-checked first (PLAN §5 accelerator): none.** The app bundle
+carries no `sourceMappingURL` (external `.map` or inline `data:` URI — both
+verified absent), so the real tree cannot be recovered from maps; the work below
+is from the bundle itself.
+
+**Structure — the module boundaries the bundle exposes are the VENDOR ones.**
+The bundle is one flat classic script (terser output: `join_vars` merges
+consecutive top-level declarations, no module-factory tables, no comments), so
+the app's own module boundaries are NOT recoverable — a re-cut can only claim
+what is provable. What is provable are the twelve three.js/Vite modules the
+bundler inlined whole, each a run of consecutive top-level statements carrying
+the library's own strings, now claimed as content-anchored wholeFile regions
+(asserted first/last statement + region guard at derive time):
+
+| region | statements | identity |
+|---|---|---|
+| `vite-modulepreload-polyfill.js` | 1 | Vite modulepreload polyfill |
+| `three-core.js` | 2–308 | three.js r186 core (constants .. WebGLRenderer) |
+| `three-examples-hdrloader.js` | 1 | examples/jsm/loaders/HDRLoader |
+| `three-examples-postprocessing.js` | 11 | Pass/FullScreenQuad/RenderPass, GTAO shaders + PoissonDenoiseShader + SimplexNoise + GTAOPass, CopyShader, LuminosityHighPassShader, UnrealBloomPass, OutputShader, OutputPass, ShaderPass |
+| `three-examples-buffergeometryutils.js` | 3 | BufferGeometryUtils (mergeGeometries/mergeAttributes/toTrianglesDrawMode) |
+| `three-examples-skeletonutils.js` | 2 | SkeletonUtils clone + parallelTraverse |
+| `three-examples-gltfloader.js` | 16 | GLTFLoader + KHR_* plugins + the GLTFParser (previously only the loader half was claimed — the parser was misfiled as app code) |
+| `three-examples-meshoptdecoder.js` | 1 | MeshoptDecoder with embedded wasm |
+| `three-examples-orbitcontrols.js` | 13 | OrbitControls (pointer handlers extracted to bound functions) |
+| `three-examples-reflector.js` | 2 | Reflector + ReflectorShader |
+| `three-examples-sky.js` | 2 | Sky + SkyShader |
+| `three-examples-roundedboxgeometry.js` | 1 | RoundedBoxGeometry |
+
+The app code between them is cut ONLY at top-level declaration boundaries and
+ONLY inside one reviewed semantic cluster (a hand-read map over the 385 app
+statements, asserted per cluster at derive time, recorded per section in
+`split-spec.json` as `cluster` + `content`): 68 slices across 58 clusters —
+`boot-utils`, `light-shafts`, `weather`, `island`, `landmarks`, `world-utils`,
+`lights`, `render-pipeline`, `terrain`, `material-tuning`, `canopy`,
+`placement`, `world-data` (the 12,241-line placements declaration stays whole),
+`paths`, `scatter`, `terrain-dressing`, `waterwheel-kinematics`, `sluice-state`,
+`sluice-gate`, `mill-interior`, `waterwheel-build`, `ground-cover`, `trees`,
+`forest`, `grass-meadow`, `shrubs`, `view-mode`, `collision`,
+`world-assembly`, `boat-hull`, `water-surface`, `waterwheel-motion`,
+`pond-water`, `pond-life`, `fish`, `birds`, `shores`, `mill-state`, `audio`,
+`mill-approach`, `boat-control`, `boat-motion`, `sky-build`, `keeper-turn`,
+`keeper-model`, `keeper-poses`, `keeper-walk`, `fishing`, `stove`,
+`keeper-room`, `boot-ui`, `renderer`, `map-2d`, `experience`, `input`,
+`inspector`, `boot` (+ `recovery-handler` for the inline slice). Windows are
+≤600 lines. **Honest limits:** cluster boundaries are an inference from the
+code's own content (scene-object names like `Waterwheel-driven mill
+machinery`, the `The old landing` lore table, shader uniforms, seed constants —
+the reading is recorded per section), not a recovered file list; no source
+maps and no module markers exist to do better.
+
+**Rename campaign (PLAN §5) — applied and gated.** `tools/names.json` is the
+reviewed artifact: 166 `global` renames (program-scope names cross-referenced
+by sibling slices — `Y`→`islandHeight`, `Qf`→`shoreOutline`, `xh`→`worldData`,
+`Eh`→`shorePath`, `cp`→`createRandom`, `X`→`millLayout`, `Qg`→
+`buildMillMachinery`, `aS`→`buildMillKeeper`, `PS`→`buildFishingLine`,
+`Q`→`playerState`, `Z`→`byId`, `mE`→`bootGame`, …) plus scoped per-slice rules
+in 8 slices (`island-01`, `boat-hull-01`, `waterwheel-kinematics-01`,
+`terrain-01`, `lights-01`, `light-shafts-01`, `boot-utils-01`,
+`material-tuning-01`) that name parameters/locals by role (`x`/`z`/`bearing`/
+`radius`, `hullContactDistance` locals, `wheelSpillElement` kinematics,
+`setupLighting`'s rig, …). Applied at identifier-token spans by
+`tools/apply-names.mjs`; the achieved map — `rename-map.json`'s `files`
+word-boundary + `scoped` token-index records — is recovered by
+`tools/recover-scoped-map.mjs`. Result: **62 of 68 slices carry the layer,
+519 names, 2,173 identifier splices (1,567 word-boundary + 606 token-index)**.
+
+Safety rules the tools enforce (and the review relied on): a global rename is
+refused when the name is declared or referenced inside a wholeFile region
+(vendor/machinery is never renamed — this is why `q` (water level), `Jm`, `Ym`
+and the light-field constants `Pp…zp` stay minified: the minifier's `join_vars`
+merged their declarations into vendor statements and `${q}` appears inside the
+merged shore shader), and every target must be a fresh spelling (no shadowing).
+The gates caught two real engine defects during the campaign, fixed in
+`tools/engine/rename-layer.mjs` and proven by re-running everything: (1)
+identifiers before a ternary `:` were misread as object keys and skipped,
+splitting a binding; (2) a bare `let a, b` declarator inside braces looked like
+an object shorthand. Vendor identifiers stay minified by construction (vendor
+regions are index-only and carry no records). The campaign is **closed**; a
+future refresh re-runs it (`derive → apply-names --all → recover-scoped-map`)
+and the gates below must stay green.
+
+Gate tails (verbatim, 2026-10-14):
+
+```
+node tools/verify.mjs
+157 files checked, 0 problems
+
+node tools/audit.js
+AUDIT PASS — 84 spec sections (68/68 src↔pretty round-trips byte-exact, 5/5 pretty sources tiled contiguously, 0/0 skipped export-table sections re-verified textually, 68/68 src slices + 4/4 readable/*.pretty.js parse standalone (node --input-type=module --check -), 5/5 pretties provably distinct from their capture source, 16 index-only wholeFile/skipped sections carry no src file, 2 inline content block(s) with twins + index-inline-map.json, 0/0 imports resolve inside the capture (0 whitelisted machinery, 0 accepted as recorded 404 gaps), rename layer: 62 renamed file(s) reproduce from their records (68/68 slice(s) exact), 5/5 pretties re-render byte-exact under pinned prettier 3.9.6 (format-to-fixed-point), capture manifest free of derived layers)
+
+node tools/verify-rename.mjs --all
+verify-rename: 62/62 file(s) reproduces YES + references ok YES + bindings ok YES
+
+node tools/check-chunk.mjs
+readable/assets__index-BogB70q-.pretty.js: 79 section(s), 59 renamed slice(s)
+  re-splice from reversed src/ byte-identical: YES
+  cross-slice references resolve: YES
+readable/index-inline-1.pretty.js: 2 section(s), 0 renamed slice(s)
+  re-splice from reversed src/ byte-identical: YES
+  cross-slice references resolve: YES
+check-chunk: 5/5 source file(s) re-splice byte-identical, cross-slice references resolve YES
+
+node tools/update.mjs
+up to date: 157 captured files identical upstream
+
+node tools/capture.mjs --check
+closure check: 11 reference group(s), 0 unresolved (0 new vs _mirror-report.json), 0 external off-origin reference(s)
+```
+
+Derive re-run reproducibility: snapshotting all 76 derived files (readable/ +
+src/ + split-spec.json + rename-map.json) before and after
+`derive.mjs && apply-names.mjs --all && recover-scoped-map.mjs` gives
+**all 76 derived bytes identical** (the derive's own self-check also reports
+`68/68 parse standalone, 68/68 round-trip byte-exact, self-check clean`).
+Serve probe on the mirror root (loopback `tools/serve.mjs`, port 8096): 7/7
+targets HTTP 200 (index, bundle, stylesheet, sky HDR, a glb, an ogg), listener
+killed, port closed (`netstat`: no LISTENING socket; connection refused).
+Record tools stay manifest-driven (capture.mjs / net-crosscheck.mjs /
+verify.mjs never walk the tree), so `src/`, `legacy/`, `split-spec.json` and
+`_mirror-report.json` cannot enter the capture record — audit re-checks that.
+Replaced derived layers are archived: the previous 77-slice `src/` + its
+`split-spec.json` live at `legacy/2026-10-14/`.
+
+### Annotated open items
+
+- `q` (water level 0.18), `Jm`/`Ym` (shore uniforms + shore shader), `Pp…zp`
+  (light-field shader constants): cannot be renamed without editing a wholeFile
+  vendor statement (see the safety rule above) — recorded, not forgotten.
+- The app's own module boundaries stay unrecovered (no source maps, no module
+  tables — verified 2026-10-14); cluster names are the recorded reading.
 
 ## Mirror conventions
 
