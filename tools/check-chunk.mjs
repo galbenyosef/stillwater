@@ -25,8 +25,56 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { tokens, classifyTokens } from "./engine/rename-layer.mjs";
+import { classifyTokens, tokens } from "./engine/rename-layer.mjs";
 import { refDrift, bindingDrift } from "./refcheck.mjs";
+
+/**
+ * The PUBLIC names a chunk exports: `export { a, b as c }` -> a and c.
+ *
+ * The binding-trace comparison below cannot see a lost public name: a
+ * shorthand export that was renamed is still a BOUND name, so the trace
+ * matches and the gate stays green while every importer of that name breaks.
+ * lagoon-tree-village proved it — `i` became LAGOON_LOBES and `a f n p t`
+ * became angleToDir/polylinePath/RAD_TO_DEG/resampleCatmullRom/DEG_TO_RAD,
+ * with check-chunk reporting "all cross-slice calls resolve". The chunk's
+ * public API is part of its contract, so it is compared directly.
+ */
+function exportedNames(text) {
+  const ts = tokens(text);
+  const names = new Set();
+  for (let i = 0; i < ts.length; i++) {
+    const t = ts[i];
+    if (t.t !== "id" || t.v !== "export") continue;
+    const n1 = ts[i + 1];
+    if (!n1) continue;
+    if (n1.t === "pun" && n1.v === "{") {
+      let end = i + 2;
+      while (end < ts.length && !(ts[end].t === "pun" && ts[end].v === "}")) end++;
+      let group = [];
+      const flush = () => {
+        if (!group.length) return;
+        const asAt = group.find((k) => ts[k].t === "id" && ts[k].v === "as");
+        if (asAt !== undefined) {
+          const after = group.slice(group.indexOf(asAt) + 1).filter((k) => ts[k].t === "id");
+          if (after.length) names.add(ts[after[0]].v);
+        } else {
+          const ids = group.filter((k) => ts[k].t === "id");
+          if (ids.length === 1) names.add(ts[ids[0]].v);
+        }
+        group = [];
+      };
+      for (let k = i + 2; k < end; k++) {
+        if (ts[k].t === "pun" && ts[k].v === ",") flush();
+        else group.push(k);
+      }
+      flush();
+      i = end;
+    } else if (n1.t === "id" && n1.v === "default") {
+      names.add("default");
+    }
+  }
+  return names;
+}
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const proj = path.resolve(here, "..");
@@ -135,8 +183,22 @@ for (const [sourceFile, sections] of [...bySource.entries()].sort()) {
     console.log(`    still called / no longer bound (${broken.length}): ${broken.slice(0, 30).join(", ")}`);
     console.log("    a declaration was renamed but its callers were not (or vice versa).");
   }
+  // the chunk's public API: a rename must not move an exported name
+  const exportedBefore = exportedNames(pristine);
+  const exportedAfter = exportedNames(renamedText);
+  const lostExports = [...exportedBefore].filter((n) => !exportedAfter.has(n));
+  const gainedExports = [...exportedAfter].filter((n) => !exportedBefore.has(n));
+
+  console.log(
+    `  public export names preserved: ${lostExports.length === 0 ? "YES" : "NO"}` +
+      ` (${exportedBefore.size} exported, ${gainedExports.length} added)`,
+  );
+  if (lostExports.length) {
+    console.log(`    lost (${lostExports.length}): ${lostExports.slice(0, 30).join(", ")}`);
+    console.log("    a renamed binding was re-exported under its own name, so the chunk's public API moved.");
+  }
   if (rebound) console.log(`    binding drift at reference ${rebound.at} (${rebound.reason})`);
-  if (!spliceOK || !resolveOK) failed++;
+  if (!spliceOK || !resolveOK || lostExports.length) failed++;
 }
 console.log(
   failed
