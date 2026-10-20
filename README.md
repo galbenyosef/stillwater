@@ -173,6 +173,7 @@ node tools/verify.mjs             # re-hash the capture against the manifest
 node tools/audit.js               # derived-layer integrity gate (AUDIT PASS)
 node tools/verify-rename.mjs --all # rename layer: reproduces/references/bindings
 node tools/check-chunk.mjs        # whole-bundle re-splice + cross-slice resolve
+node tools/check-exports.mjs      # the derived layer still exports every public name
 node tools/capture.mjs --check    # static closure: 0 unresolved beyond recorded gaps
 node tools/net-crosscheck.mjs docs/boot-network-2026-10-13.json
 ```
