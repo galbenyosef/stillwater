@@ -3,6 +3,25 @@
 // tools/engine/rename-layer.mjs; desimayhem / sunlandia lineage) — nothing is
 // read from another mirror at runtime.
 //
+// Ported from the fleet's rename-campaign engine (templates/rename-campaign/
+// engine/rename-layer.mjs): the shorthand-export DETECTION helpers — the token
+// indices of the identifiers a source re-exports under their OWN name
+// (`export { i }`), and the names themselves. The alias keyword is found BY
+// POSITION (one identifier in a group is a shorthand, a group whose second
+// identifier is the keyword is aliased), never by value: a chunk can have a
+// local literally named `as`, and a value-based lookup then finds the LOCAL,
+// not the keyword.
+//
+// This engine has no `applyBindingMap` — it rebuilds no index-only skipped
+// tail, and this mirror's split-spec records no `sources[].renameBindings` and
+// no `skipped` section — so the emission half of the fleet's fix (rewriting
+// such an identifier as `TARGET as ORIGINAL`) has no site here; the helpers
+// are ported so the rule is present, position-based and byte-identical to the
+// fleet's. The layer carries no ES-module export table at all — 0 export
+// groups across the 73 layer texts (68 src/ slices + 4 readable/ pretty
+// sources + the assets/ bundle) — so no public export name here can move;
+// the helpers are INERT for this mirror.
+//
 // A "rename layer" over a slice means:
 //
 //     committed file  ==  readable range, with identifiers substituted
@@ -302,6 +321,62 @@ export function applyRecords(baseBody, flat, indexed) {
     if (eligible[k] && Object.prototype.hasOwnProperty.call(flat, t.v)) reps.push({ s: t.s, e: t.e, to: flat[t.v] });
   }
   return spliceTokens(baseBody, reps);
+}
+
+/**
+ * Token indices of SHORTHAND export entries — `export { i }`, where the single
+ * identifier is BOTH the local binding and the chunk's public export name.
+ *
+ * A group with more than one identifier has a separate alias side (the last
+ * name), which `foreignNameIndices` already protects: the alias IS the public
+ * API and the local may be renamed freely. A ONE-identifier group has no alias
+ * side, so its identifier is simultaneously the local and the public name —
+ * renaming it moves the chunk's public API and every importer of that name
+ * stops resolving. lagoon-tree-village proved it: `i` became LAGOON_LOBES and
+ * `a f n p t` became angleToDir/polylinePath/RAD_TO_DEG/resampleCatmullRom/
+ * DEG_TO_RAD, and twelve chunks importing those names broke.
+ */
+export function shorthandExportIndices(toks) {
+  const out = new Set();
+  for (let i = 0; i < toks.length - 1; i++) {
+    const kw = toks[i];
+    if (kw.t !== "id" || kw.v !== "export") continue;
+    if (toks[i + 1].t !== "pun" || toks[i + 1].v !== "{") continue;
+    let end = i + 2;
+    while (end < toks.length && !(toks[end].t === "pun" && toks[end].v === "}")) end++;
+    let group = [];
+    const flush = () => {
+      // The alias KEYWORD is found BY POSITION, not by value: a chunk can have
+      // a local literally named `as`, and then the group is
+      // `export { as as o }` — ids = [as, as, o] — where a value-based lookup
+      // finds the LOCAL, not the keyword. Worse, a group of ONE id whose
+      // value is "as" (`export { as }`) is a SHORTHAND export of a local named
+      // `as`, and a value-based "is there an `as` here?" test would wrongly
+      // call it an alias and skip it.
+      //   one id            -> shorthand: the local IS the public name
+      //   ids[1] === "as"   -> aliased: the public name is ids[2]
+      const ids = group.filter((k) => toks[k].t === "id");
+      if (ids.length === 1) out.add(ids[0]);
+      group = [];
+    };
+    for (let k = i + 2; k < end; k++) {
+      if (toks[k].t === "pun" && toks[k].v === ",") flush();
+      else group.push(k);
+    }
+    flush();
+  }
+  return out;
+}
+
+/**
+ * The names a source re-exports under their OWN name — the shorthand exports
+ * (`export { i }`). These are the chunk's public API names.
+ */
+export function shorthandExportLocals(text) {
+  const toks = tokens(text);
+  const out = new Set();
+  for (const i of shorthandExportIndices(toks)) out.add(toks[i].v);
+  return out;
 }
 
 /** Rewrite text by replacing the spans in `reps` (any order). */
