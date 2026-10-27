@@ -661,7 +661,7 @@ if (manifest) {
 const prettierCandidates = [
   process.env.PRETTIER_MJS,
   path.join(proj, "node_modules", "prettier", "index.mjs"),
-  "D:/repos/mirrors/metropolygonia/node_modules/prettier/index.mjs",
+  path.join(proj, "tools", "vendor", "prettier", "index.mjs"),
 ].filter(Boolean);
 function loadPinnedPrettier() {
   for (const c of prettierCandidates) {
