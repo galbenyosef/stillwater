@@ -403,6 +403,24 @@ Replaced derived layers are archived: the previous 77-slice `src/` + its
 - The app's own module boundaries stay unrecovered (no source maps, no module
   tables — verified 2026-10-14); cluster names are the recorded reading.
 
+## Boot test (2026-10-27)
+
+- Entry: `http://127.0.0.1:4964/` served by `tools/serve.mjs` with the network
+  blocked (`MAP * 127.0.0.1`).
+- Outcome: **rendered** — the loading screen faded to the welcome card, and one
+  click on **Step outside** revealed the playable mill landing: the keeper by the
+  dock, the rowing boat, the watermill with its wheel and waterfall, the pond
+  reflections, and the top bar (Follow / Sound off / Map / ?) plus the
+  "Go for a swim" interaction prompt.
+- Evidence: body 159 chars; canvas 1262x568 (plus the 460x380 map canvas);
+  0 console errors; 0 failed same-origin requests, 0 blocked cross-origin
+  (145 resource entries, all same-origin HTTP 200); screenshot
+  `docs/boot-2026-10-27.png`.
+- Gaps seen: none.
+- The mirror has no "playable build absent/gated" claim; this boot confirms the
+  earlier 2026-10-13 play report — the captured build is complete and plays
+  offline.
+
 ## Mirror conventions
 
 - **Capture layer** — the captured files are byte-exact copies of what the
